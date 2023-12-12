@@ -88,11 +88,11 @@ public class SIR {
         double δ2 = parametros[6];
 
         for (int i = 0; i < n; i++) {
-            Sn = Sn + h * fS(Sn, In, λ, b, µ);
+            Sn = S0 + h * fS(Sn, In, λ, b, µ);
             S0 = Sn;
-            In = In + h * fI(Sn, In, Rn, b, k, β, µ, δ1);
+            In = I0 + h * fI(Sn, In, Rn, b, k, β, µ, δ1);
             I0 = In;
-            Rn = Rn + h * fR(In, Rn, k, β, µ, δ2);
+            Rn = R0 + h * fR(In, Rn, k, β, µ, δ2);
             R0 = Rn;
         }
 
