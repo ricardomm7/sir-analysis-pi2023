@@ -15,7 +15,6 @@ public class SIR {
 
         System.out.println("Resultado final (y_n) pelo Metodo de Euler: " + resultadoEuler);
         System.out.println("Resultado final (y_n) pelo Método de Runge-Kutta: " + resultadoRunge);
-
     }
 
     public static double[] lerValoresIniciais() {
@@ -32,7 +31,6 @@ public class SIR {
         valoresIniciais[4] = ler.nextDouble();
 
         return valoresIniciais;
-
     }
 
     public static double[] lerParametros() {
@@ -53,7 +51,6 @@ public class SIR {
         parametros[6] = ler.nextDouble();
 
         return parametros;
-
     }
 
 
@@ -98,8 +95,6 @@ public class SIR {
 
         double[] resultados = {Sn, In, Rn};
         return resultados;
-
-
     }
 
     public static double aplicarMetodoDeRunge_Kutta(double t0, double S0, double I0, double R0, double h) {
