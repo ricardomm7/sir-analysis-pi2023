@@ -9,7 +9,7 @@ public class SIR {
     static double lambda = 0.04;
     static double b = 0.02;
     static double k = 0.02;
-    static double beta = 0.03;
+    static double beta = 0.03;  //Constante é sempre final e letraMAISCULA e _ se tiver mais que 1 palavra ex: TEST_TST
     static double u = 0.04;
     static double delta1 = 0;
     static double delta2 = 0;
@@ -36,25 +36,26 @@ public class SIR {
         } else if (num == 2) {
             aplicarRK4(S, I, R);
         }
+        System.out.print("Digite qual o passo de integração que deseja: ";
 
         escreverResultadosEmFicheiro(S, I, R);
 
 
-        /*double[] valoresIniciais = lerValoresIniciais();
+        double[] valoresIniciais = lerValoresIniciais();
         double[] parametros = lerParametros();
-       */
+
     }
 
 
     public static double[] lerValoresIniciais() {
         Scanner ler = new Scanner(new File(VALORES_INICIAIS));
         ler.nextLine();
-                
+
         double[] valoresIniciais = new double[3];
         valoresIniciais[0] = ler.nextDouble();
         valoresIniciais[1] = ler.nextDouble();
         valoresIniciais[2] = ler.nextDouble();
-        
+
         ler.close();
 
         return valoresIniciais;
@@ -65,7 +66,7 @@ public class SIR {
         Scanner ler = new Scanner(new File(PARAMETROS));
         ler.nextLine();
         ler.nextDouble();
-        
+
         parametros[0] = ler.nextDouble();
         parametros[1] = ler.nextDouble();
         parametros[2] = ler.nextDouble();
@@ -140,6 +141,7 @@ public class SIR {
 
         }
     }
+
 
     public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R) throws FileNotFoundException {
         PrintWriter out = new PrintWriter("resultados.txt");
