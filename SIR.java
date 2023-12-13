@@ -14,6 +14,7 @@ public class SIR {
     static double S0 = 0.5;
     static double I0 = 0.3;
     static double R0 = 0.2;
+
     //Informações a pedir ao utilizador acho eu
     static int numeroDeDias = 5;
     static double h = 1.0;
@@ -33,19 +34,13 @@ public class SIR {
             aplicarRK4(S, I, R);
         }
 
-
         escreverResultadosEmFicheiro(S, I, R);
 
 
         /*double[] valoresIniciais = lerValoresIniciais();
         double[] parametros = lerParametros();
-
-        double[] resultadoEuler = aplicarMetodoDeEuler(valoresIniciais, parametros);
-        double resultadoRunge = aplicarMetodoDeRunge_Kutta(valoresIniciais[1], valoresIniciais[2], valoresIniciais[3], valoresIniciais[4], valoresIniciais[5]);
-
        */
     }
-
 
     /*
     public static double[] lerValoresIniciais() {
