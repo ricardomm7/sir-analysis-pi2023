@@ -29,7 +29,6 @@ public class SIR {
         escreverResultadosEmFicheiro(S, I, R);
     }
 
-
     public static double[] lerValoresIniciais() throws FileNotFoundException {
         Scanner ler = new Scanner(new File(VALORES_INICIAIS));
         ler.nextLine();
@@ -65,7 +64,6 @@ public class SIR {
     public static double fR(int dia, double[] I, double[] R, double[] parametros) {
         return (parametros[2] * I[dia - 1] - parametros[3] * I[dia - 1] * R[dia - 1] - (parametros[1] + parametros[6]) * R[dia - 1]);
     }
-
 
     public static void aplicarEuler(double[] S, double[] I, double[] R, double[] valoresIniciais, double[] parametros) {
         S[0] = valoresIniciais[0];
@@ -111,7 +109,6 @@ public class SIR {
             R[dia] = R[dia - 1] + kR;
         }
     }
-
 
     public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R) throws FileNotFoundException {
         PrintWriter out = new PrintWriter("resultados.txt");
