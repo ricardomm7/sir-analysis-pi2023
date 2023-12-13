@@ -12,10 +12,6 @@ public class SIR {
     static double u = 0.04;
     static double delta1 = 0;
     static double delta2 = 0;
-    //Valores Iniciais
-    static double S0 = 0.5;
-    static double I0 = 0.3;
-    static double R0 = 0.2;
 
     //Informações a pedir ao utilizador acho eu
     static int numeroDeDias = 5;
@@ -23,26 +19,23 @@ public class SIR {
     static Scanner ler = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException {
+        double[] valoresIniciais = lerValoresIniciais();
+        double[] parametros = lerParametros();
+
         double[] S = new double[numeroDeDias];
         double[] I = new double[numeroDeDias];
         double[] R = new double[numeroDeDias];
 
-
         System.out.print("Digite (1) caso queira aplicar o método de Euler\nDigite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem\n");
         int num = ler.nextInt();
         if (num == 1) {
-            aplicarEuler(S, I, R);
+            aplicarEuler(S, I, R, valoresIniciais);
         } else if (num == 2) {
             aplicarRK4(S, I, R);
         }
-        System.out.print("Digite qual o passo de integração que deseja: ";
+        System.out.print("Digite qual o passo de integração que deseja: ");
 
         escreverResultadosEmFicheiro(S, I, R);
-
-
-        double[] valoresIniciais = lerValoresIniciais();
-        double[] parametros = lerParametros();
-
     }
 
 
@@ -92,10 +85,10 @@ public class SIR {
     }
 
 
-    public static void aplicarEuler(double[] S, double[] I, double[] R) {
-        S[0] = S0;
-        I[0] = I0;
-        R[0] = R0;
+    public static void aplicarEuler(double[] S, double[] I, double[] R, double[] valoresIniciais) {
+        S[0] = valoresIniciais[0];
+        I[0] = valoresIniciais[1];
+        R[0] = valoresIniciais[2];
         for (int dia = 1; dia < numeroDeDias; dia++) {
             double dS = h * fS(dia, S, I);
             double dI = h * fI(dia, S, I, R);
@@ -107,10 +100,10 @@ public class SIR {
         }
     }
 
-    public static void aplicarRK4(double[] S, double[] I, double[] R) {
-        S[0] = S0;
-        I[0] = I0;
-        R[0] = R0;
+    public static void aplicarRK4(double[] S, double[] I, double[] R, double[] valoresIniciais) {
+        S[0] = valoresIniciais[0];
+        I[0] = valoresIniciais[1];
+        R[0] = valoresIniciais[2];
 
         for (int dia = 1; dia < numeroDeDias; dia++) {
 
