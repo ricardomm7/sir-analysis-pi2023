@@ -4,8 +4,7 @@ import java.util.Scanner;
 public class SIR {
     static final String VALORES_INICIAIS = "estado_inicial.csv";
     static final String PARAMETROS = "params_exemplo1.csv";
-
-    //Informações a pedir ao utilizador acho eu
+    //Informações a pedir ao utilizador
     static int numeroDeDias = 5;
     static double h = 1.0;
     static Scanner ler = new Scanner(System.in);
@@ -34,34 +33,25 @@ public class SIR {
     public static double[] lerValoresIniciais() throws FileNotFoundException {
         Scanner ler = new Scanner(new File(VALORES_INICIAIS));
         ler.nextLine();
-
         String[] valores = ler.nextLine().split(";");
         double[] valoresIniciais = new double[valores.length];
-
         for (int i = 0; i < valores.length; i++) {
             valoresIniciais[i] = Double.parseDouble(valores[i].replace(',', '.'));
         }
-
         ler.close();
-
         return valoresIniciais;
     }
 
     public static double[] lerParametros() throws FileNotFoundException {
         double[] parametros = new double[7];
         Scanner ler = new Scanner(new File(PARAMETROS));
-
         ler.nextLine(); // Ignorar a primeira linha
-
         String[] parametro = ler.nextLine().split(";");
-
         // Começar a partir do segundo elemento do array
         for (int i = 1; i < parametro.length; i++) {
             parametros[i - 1] = Double.parseDouble(parametro[i].replace(',', '.'));
         }
-
         ler.close();
-
         return parametros;
     }
 
@@ -86,7 +76,6 @@ public class SIR {
             double dS = h * fS(dia, S, I, parametros);
             double dI = h * fI(dia, S, I, R, parametros);
             double dR = h * fR(dia, I, R, parametros);
-
             S[dia] = S[dia - 1] + dS;
             I[dia] = I[dia - 1] + dI;
             R[dia] = R[dia - 1] + dR;
@@ -97,9 +86,7 @@ public class SIR {
         S[0] = valoresIniciais[0];
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
-
         for (int dia = 1; dia < numeroDeDias; dia++) {
-
             double k1S = fS(dia, S, I, parametros);
             double k1I = fI(dia, S, I, R, parametros);
             double k1R = fR(dia, I, R, parametros);
@@ -123,20 +110,16 @@ public class SIR {
             S[dia] = S[dia - 1] + kS;
             I[dia] = I[dia - 1] + kI;
             R[dia] = R[dia - 1] + kR;
-
         }
     }
 
 
     public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R) throws FileNotFoundException {
         PrintWriter out = new PrintWriter("resultados.txt");
-
         out.print("Dia       S               I               R               T          \n");
-
         for (int dia = 0; dia < numeroDeDias; dia++) {
             double total = S[dia] + I[dia] + R[dia];
             out.printf("%d\t%12.4f\t%12.4f\t%12.4f\t%12.4f%n", dia, S[dia], I[dia], R[dia], total);
-
         }
         out.close();
     }
