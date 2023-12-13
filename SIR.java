@@ -45,9 +45,8 @@ public class SIR {
     public static double[] lerParametros() throws FileNotFoundException {
         double[] parametros = new double[7];
         Scanner ler = new Scanner(new File(PARAMETROS));
-        ler.nextLine(); // Ignorar a primeira linha
+        ler.nextLine();
         String[] parametro = ler.nextLine().split(";");
-        // Começar a partir do segundo elemento do array
         for (int i = 1; i < parametro.length; i++) {
             parametros[i - 1] = Double.parseDouble(parametro[i].replace(',', '.'));
         }
