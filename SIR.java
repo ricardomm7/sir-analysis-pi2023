@@ -24,9 +24,6 @@ public class SIR {
         double[] I = new double[numeroDeDias];
         double[] R = new double[numeroDeDias];
 
-        S[0] = S0;
-        I[0] = I0;
-        R[0] = R0;
 
         System.out.print("Digite (1) caso queira aplicar o método de Euler\nDigite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem\n");
         int num = ler.nextInt();
@@ -46,8 +43,7 @@ public class SIR {
         double[] resultadoEuler = aplicarMetodoDeEuler(valoresIniciais, parametros);
         double resultadoRunge = aplicarMetodoDeRunge_Kutta(valoresIniciais[1], valoresIniciais[2], valoresIniciais[3], valoresIniciais[4], valoresIniciais[5]);
 
-        System.out.println("Resultado final (y_n) pelo Metodo de Euler: " + resultadoEuler);
-        System.out.println("Resultado final (y_n) pelo Método de Runge-Kutta: " + resultadoRunge);*/
+       */
     }
 
 
@@ -105,6 +101,9 @@ public class SIR {
 
 
     public static void aplicarEuler(double[] S, double[] I, double[] R) {
+        S[0] = S0;
+        I[0] = I0;
+        R[0] = R0;
         for (int dia = 1; dia < numeroDeDias; dia++) {
             double dS = h * fS(dia, S, I);
             double dI = h * fI(dia, S, I, R);
@@ -113,12 +112,14 @@ public class SIR {
             S[dia] = S[dia - 1] + dS;
             I[dia] = I[dia - 1] + dI;
             R[dia] = R[dia - 1] + dR;
-
-
         }
     }
 
     public static void aplicarRK4(double[] S, double[] I, double[] R) {
+        S[0] = S0;
+        I[0] = I0;
+        R[0] = R0;
+
         for (int dia = 1; dia < numeroDeDias; dia++) {
 
             double k1S = fS(dia, S, I);
@@ -147,6 +148,7 @@ public class SIR {
 
         }
     }
+
     public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R) throws FileNotFoundException {
         PrintWriter out = new PrintWriter("resultados.txt");
 
