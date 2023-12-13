@@ -51,19 +51,6 @@ public class SIR {
     }
 
 
-    public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R) throws FileNotFoundException {
-        PrintWriter out = new PrintWriter("resultados.txt");
-
-        out.print("Dia       S               I               R               T          \n");
-
-        for (int dia = 0; dia < numeroDeDias; dia++) {
-            double total = S[dia] + I[dia] + R[dia];
-            out.printf("%d\t%12.4f\t%12.4f\t%12.4f\t%12.4f%n", dia, S[dia], I[dia], R[dia], total);
-
-        }
-        out.close();
-    }
-
     /*
     public static double[] lerValoresIniciais() {
         double[] valoresIniciais = new double[6];
@@ -119,9 +106,6 @@ public class SIR {
 
     public static void aplicarEuler(double[] S, double[] I, double[] R) {
         for (int dia = 1; dia < numeroDeDias; dia++) {
-            /*double dS = h * (λ - (b * S[dia-1] * I[dia-1]) - (µ * S[dia-1]));
-            double dI = h * (b * S[dia-1] * I[dia-1] - k * I[dia-1] + β * I[dia-1] * R[dia-1] - (µ + δ1) * I[dia-1]);
-            double dR = h * (k * I[dia-1] - β * I[dia-1] * R[dia-1] - (µ + δ2) * R[dia-1]);*/
             double dS = h * fS(dia, S, I);
             double dI = h * fI(dia, S, I, R);
             double dR = h * fR(dia, I, R);
@@ -137,9 +121,9 @@ public class SIR {
     public static void aplicarRK4(double[] S, double[] I, double[] R) {
         for (int dia = 1; dia < numeroDeDias; dia++) {
 
-            double k1S = fS(dia, S, I); // h *(λ - b * S[dia-1] * I[dia-1] - µ * S[dia-1]);
-            double k1I = fI(dia, S, I, R); // h *(b * S[dia-1] * I[dia-1] - k * I[dia-1] + β * I[dia-1] * R[dia-1] - (µ + δ1) * I[dia-1]);
-            double k1R = fR(dia, I, R); // h *(k * I[dia-1] - β * I[dia-1] * R[dia-1] - (µ + δ2) * R[dia-1]);
+            double k1S = fS(dia, S, I);
+            double k1I = fI(dia, S, I, R);
+            double k1R = fR(dia, I, R);
 
             double k2S = h * (lambda - b * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - u * (S[dia - 1] + h / 2 * k1S));
             double k2I = h * (b * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - k * (I[dia - 1] + h / 2 * k1I) + beta * (I[dia - 1] + h / 2 * k1I) * (R[dia - 1] + h / 2 * k1R) - (u + delta1) * (I[dia - 1] + h / 2 * k1I));
@@ -162,43 +146,17 @@ public class SIR {
             R[dia] = R[dia - 1] + kR;
 
         }
-    }/*
-    public static double[] aplicarMetodoDeEuler(double[] valoresIniciais, double[] parametros) {
-        double n = (numeroDeDias) / h;
-        double Sn = S0;
-        double In = I0;
-        double Rn = R0;
+    }
+    public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R) throws FileNotFoundException {
+        PrintWriter out = new PrintWriter("resultados.txt");
 
+        out.print("Dia       S               I               R               T          \n");
 
-        for (int i = 0; i < n; i++) {
-            Sn = S0 + h * fS(Sn, In, λ, b, µ);
-            S0 = Sn;
-            In = I0 + h * fI(Sn, In, Rn, b, k, β, µ, δ1);
-            I0 = In;
-            Rn = R0 + h * fR(In, Rn, k, β, µ, δ2);
-            R0 = Rn;
+        for (int dia = 0; dia < numeroDeDias; dia++) {
+            double total = S[dia] + I[dia] + R[dia];
+            out.printf("%d\t%12.4f\t%12.4f\t%12.4f\t%12.4f%n", dia, S[dia], I[dia], R[dia], total);
+
         }
-
-        double[] resultados = {Sn, In, Rn};
-        return resultados;
-    }*
-
-    public static double aplicarMetodoDeRunge_Kutta(double t0, double S0, double I0, double R0, double h) {
-        double n = (numeroDeDias) / h;
-        double yn = -1;
-
-        for (int i = 0; i < n; i++) {
-            double k1 = h * f(x0, y0);
-            double k2 = h * f(x0 + h / 2, y0 + k1 / 2);
-            double k3 = h * f(x0 + h / 2, y0 + k2 / 2);
-            double k4 = h * f(x0 + h, y0 + k3);
-
-            double k = (k1 + 2 * k2 + 2 * k3 + k4) / 6;
-
-            yn = y0 + k;
-            x0 = x0 + h;
-            y0 = yn;
-        }
-        return yn;
-    }*/
+        out.close();
+    }
 }
