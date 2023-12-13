@@ -3,13 +3,13 @@ import java.util.Scanner;
 
 public class SIR {
     // Parametros
-    static double λ = 0.04;
+    static double lambda = 0.04;
     static double b = 0.02;
     static double k = 0.02;
-    static double β = 0.03;
-    static double µ = 0.04;
-    static double δ1 = 0;
-    static double δ2 = 0;
+    static double beta = 0.03;
+    static double u = 0.04;
+    static double delta1 = 0;
+    static double delta2 = 0;
     //Valores Iniciais
     static double S0 = 0.5;
     static double I0 = 0.3;
@@ -19,8 +19,7 @@ public class SIR {
     static double h = 1.0;
     static Scanner ler = new Scanner(System.in);
 
-
-    public static void main(String[] args) throws FileNotFoundException  {
+    public static void main(String[] args) throws FileNotFoundException {
         double[] S = new double[numeroDeDias];
         double[] I = new double[numeroDeDias];
         double[] R = new double[numeroDeDias];
@@ -53,7 +52,7 @@ public class SIR {
 
 
     public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R) throws FileNotFoundException {
-        PrintWriter out = new PrintWriter(new File("resultados.txt"));
+        PrintWriter out = new PrintWriter("resultados.txt");
 
         out.print("Dia       S               I               R               T          \n");
 
@@ -106,15 +105,15 @@ public class SIR {
 
 
     public static double fS(int dia, double[] S, double[] I) {
-        return (λ - (b * S[dia - 1] * I[dia - 1]) - (µ * S[dia - 1]));
+        return (lambda - (b * S[dia - 1] * I[dia - 1]) - (u * S[dia - 1]));
     }
 
     public static double fI(int dia, double[] S, double[] I, double[] R) {
-        return (b * S[dia - 1] * I[dia - 1] - k * I[dia - 1] + β * I[dia - 1] * R[dia - 1] - (µ + δ1) * I[dia - 1]);
+        return (b * S[dia - 1] * I[dia - 1] - k * I[dia - 1] + beta * I[dia - 1] * R[dia - 1] - (u + delta1) * I[dia - 1]);
     }
 
     public static double fR(int dia, double[] I, double[] R) {
-        return (k * I[dia - 1] - β * I[dia - 1] * R[dia - 1] - (µ + δ2) * R[dia - 1]);
+        return (k * I[dia - 1] - beta * I[dia - 1] * R[dia - 1] - (u + delta2) * R[dia - 1]);
     }
 
 
@@ -142,17 +141,17 @@ public class SIR {
             double k1I = fI(dia, S, I, R); // h *(b * S[dia-1] * I[dia-1] - k * I[dia-1] + β * I[dia-1] * R[dia-1] - (µ + δ1) * I[dia-1]);
             double k1R = fR(dia, I, R); // h *(k * I[dia-1] - β * I[dia-1] * R[dia-1] - (µ + δ2) * R[dia-1]);
 
-            double k2S = h * (λ - b * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - µ * (S[dia - 1] + h / 2 * k1S));
-            double k2I = h * (b * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - k * (I[dia - 1] + h / 2 * k1I) + β * (I[dia - 1] + h / 2 * k1I) * (R[dia - 1] + h / 2 * k1R) - (µ + δ1) * (I[dia - 1] + h / 2 * k1I));
-            double k2R = h * (k * (I[dia - 1] + h / 2 * k1I) - β * (I[dia - 1] + h / 2 * k1I) * (R[dia - 1] + h / 2 * k1R) - (µ + δ2) * (R[dia - 1] + h / 2 * k1R));
+            double k2S = h * (lambda - b * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - u * (S[dia - 1] + h / 2 * k1S));
+            double k2I = h * (b * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - k * (I[dia - 1] + h / 2 * k1I) + beta * (I[dia - 1] + h / 2 * k1I) * (R[dia - 1] + h / 2 * k1R) - (u + delta1) * (I[dia - 1] + h / 2 * k1I));
+            double k2R = h * (k * (I[dia - 1] + h / 2 * k1I) - beta * (I[dia - 1] + h / 2 * k1I) * (R[dia - 1] + h / 2 * k1R) - (u + delta2) * (R[dia - 1] + h / 2 * k1R));
 
-            double k3S = h * (λ - b * (S[dia - 1] + h / 2 * k2S) * (I[dia - 1] + h / 2 * k2I) - µ * (S[dia - 1] + h / 2 * k2S));
-            double k3I = h * (b * (S[dia - 1] + h / 2 * k2S) * (I[dia - 1] + h / 2 * k2I) - k * (I[dia - 1] + h / 2 * k2I) + β * (I[dia - 1] + h / 2 * k2I) * (R[dia - 1] + h / 2 * k2R) - (µ + δ1) * (I[dia - 1] + h / 2 * k2I));
-            double k3R = h * (k * (I[dia - 1] + h / 2 * k2I) - β * (I[dia - 1] + h / 2 * k2I) * (R[dia - 1] + h / 2 * k2R) - (µ + δ2) * (R[dia - 1] + h / 2 * k2R));
+            double k3S = h * (lambda - b * (S[dia - 1] + h / 2 * k2S) * (I[dia - 1] + h / 2 * k2I) - u * (S[dia - 1] + h / 2 * k2S));
+            double k3I = h * (b * (S[dia - 1] + h / 2 * k2S) * (I[dia - 1] + h / 2 * k2I) - k * (I[dia - 1] + h / 2 * k2I) + beta * (I[dia - 1] + h / 2 * k2I) * (R[dia - 1] + h / 2 * k2R) - (u + delta1) * (I[dia - 1] + h / 2 * k2I));
+            double k3R = h * (k * (I[dia - 1] + h / 2 * k2I) - beta * (I[dia - 1] + h / 2 * k2I) * (R[dia - 1] + h / 2 * k2R) - (u + delta2) * (R[dia - 1] + h / 2 * k2R));
 
-            double k4S = h * (λ - b * (S[dia - 1] + h * k3S) * (I[dia - 1] + h * k3I) - µ * (S[dia - 1] + h * k3S));
-            double k4I = h * (b * (S[dia - 1] + h * k3S) * (I[dia - 1] + h * k3I) - k * (I[dia - 1] + h * k3I) + β * (I[dia - 1] + h * k3I) * (R[dia - 1] + h * k3R) - (µ + δ1) * (I[dia - 1] + h * k3I));
-            double k4R = h * (k * (I[dia - 1] + h * k3I) - β * (I[dia - 1] + h * k3I) * (R[dia - 1] + h * k3R) - (µ + δ2) * (R[dia - 1] + h * k3R));
+            double k4S = h * (lambda - b * (S[dia - 1] + h * k3S) * (I[dia - 1] + h * k3I) - u * (S[dia - 1] + h * k3S));
+            double k4I = h * (b * (S[dia - 1] + h * k3S) * (I[dia - 1] + h * k3I) - k * (I[dia - 1] + h * k3I) + beta * (I[dia - 1] + h * k3I) * (R[dia - 1] + h * k3R) - (u + delta1) * (I[dia - 1] + h * k3I));
+            double k4R = h * (k * (I[dia - 1] + h * k3I) - beta * (I[dia - 1] + h * k3I) * (R[dia - 1] + h * k3R) - (u + delta2) * (R[dia - 1] + h * k3R));
 
             double kS = (k1S + 2 * k2S + 2 * k3S + k4S) / 6;
             double kI = (k1I + 2 * k2I + 2 * k3I + k4I) / 6;
