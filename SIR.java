@@ -4,14 +4,22 @@ import java.util.Scanner;
 public class SIR {
     static final String VALORES_INICIAIS = "estado_inicial.csv";
     static final String PARAMETROS = "params_exemplo1.csv";
-    //Informações a pedir ao utilizador
-    static int numeroDeDias = 5;
-    static double h = 1.0;
+
+    static final int LIMITE_INF_PASSO = 0;
+    static final int LIMITE_SUP_PASSO = 1;
+
     static Scanner ler = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException {
         double[] valoresIniciais = lerValoresIniciais();
         double[] parametros = lerParametros();
+
+        System.out.print("Digite qual o número de dias que deseja analisar: ");
+        int numeroDeDias = ler.nextInt();
+        System.out.print("Digite qual o passo de integração que deseja: ");
+        double h = validarNumero();
+
+
 
         double[] S = new double[numeroDeDias];
         double[] I = new double[numeroDeDias];
@@ -20,13 +28,20 @@ public class SIR {
         System.out.print("Digite (1) caso queira aplicar o método de Euler\nDigite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem\n");
         int num = ler.nextInt();
         if (num == 1) {
-            aplicarEuler(S, I, R, valoresIniciais, parametros);
+            aplicarEuler(S, I, R, h, numeroDeDias, valoresIniciais, parametros);
         } else if (num == 2) {
-            aplicarRK4(S, I, R, valoresIniciais, parametros);
+            aplicarRK4(S, I, R,h, numeroDeDias, valoresIniciais, parametros);
         }
-        System.out.print("Digite qual o passo de integração que deseja: ");
 
-        escreverResultadosEmFicheiro(S, I, R);
+        escreverResultadosEmFicheiro(S, I, R, numeroDeDias);
+    }
+    public static double validarNumero(){
+         double num;
+        do {
+            num = ler.nextDouble();
+        } while (num < LIMITE_INF_PASSO || num > LIMITE_SUP_PASSO);
+
+        return num;
     }
 
     public static double[] lerValoresIniciais() throws FileNotFoundException {
@@ -65,7 +80,7 @@ public class SIR {
         return (parametros[2] * I[dia - 1] - parametros[3] * I[dia - 1] * R[dia - 1] - (parametros[1] + parametros[6]) * R[dia - 1]);
     }
 
-    public static void aplicarEuler(double[] S, double[] I, double[] R, double[] valoresIniciais, double[] parametros) {
+    public static void aplicarEuler(double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros) {
         S[0] = valoresIniciais[0];
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
@@ -79,7 +94,7 @@ public class SIR {
         }
     }
 
-    public static void aplicarRK4(double[] S, double[] I, double[] R, double[] valoresIniciais, double[] parametros) {
+    public static void aplicarRK4(double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros) {
         S[0] = valoresIniciais[0];
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
@@ -110,7 +125,7 @@ public class SIR {
         }
     }
 
-    public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R) throws FileNotFoundException {
+    public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R, int numeroDeDias) throws FileNotFoundException {
         PrintWriter out = new PrintWriter("resultados.txt");
         out.print("Dia       S               I               R               T          \n");
         for (int dia = 0; dia < numeroDeDias; dia++) {
