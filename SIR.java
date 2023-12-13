@@ -2,7 +2,6 @@ import java.io.*;
 import java.util.Scanner;
 
 public class SIR {
-
     static final String VALORES_INICIAIS = "estado_inicial.csv";
     static final String PARAMETROS = "params_exemplo1.csv";
     // Parametros
