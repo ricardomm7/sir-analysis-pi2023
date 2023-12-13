@@ -50,13 +50,10 @@ public class SIR {
         Scanner ler = new Scanner(new File(VALORES_INICIAIS));
         ler.nextLine();
                 
-        double[] valoresIniciais = new double[6];
+        double[] valoresIniciais = new double[3];
         valoresIniciais[0] = ler.nextDouble();
         valoresIniciais[1] = ler.nextDouble();
         valoresIniciais[2] = ler.nextDouble();
-        valoresIniciais[3] = ler.nextDouble();
-        valoresIniciais[4] = ler.nextDouble();
-        valoresIniciais[5] = ler.nextDouble();
         
         ler.close();
 
@@ -64,9 +61,10 @@ public class SIR {
     }
 
     public static double[] lerParametros() {
-        double[] parametros = new double[7];
+        double[] parametros = new double[6];
         Scanner ler = new Scanner(new File(PARAMETROS));
         ler.nextLine();
+        ler.nextDouble();
         
         parametros[0] = ler.nextDouble();
         parametros[1] = ler.nextDouble();
@@ -74,7 +72,6 @@ public class SIR {
         parametros[3] = ler.nextDouble();
         parametros[4] = ler.nextDouble();
         parametros[5] = ler.nextDouble();
-        parametros[6] = ler.nextDouble();
 
         ler.close();
 
