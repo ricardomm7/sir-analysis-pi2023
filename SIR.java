@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.Scanner;
 
 public class SIR {
+    // Parametros
     static double λ = 0.04;
     static double b = 0.02;
     static double k = 0.02;
@@ -9,9 +10,11 @@ public class SIR {
     static double µ = 0.04;
     static double δ1 = 0;
     static double δ2 = 0;
+    //Valores Iniciais
     static double S0 = 0.5;
     static double I0 = 0.3;
     static double R0 = 0.2;
+    //Informações a pedir ao utilizador acho eu
     static int numeroDeDias = 5;
     static double h = 1.0;
     static Scanner ler = new Scanner(System.in);
