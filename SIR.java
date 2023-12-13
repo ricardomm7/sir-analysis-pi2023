@@ -50,19 +50,20 @@ public class SIR {
     public static double[] lerParametros() throws FileNotFoundException {
         double[] parametros = new double[7];
         Scanner ler = new Scanner(new File(PARAMETROS));
-        ler.nextLine();
+
+        ler.nextLine(); // Ignorar a primeira linha
+
         String[] parametro = ler.nextLine().split(";");
 
-
-        for (int i = 0; i < parametro.length; i++) {
-            parametros[i] = Double.parseDouble(parametro[i].replace(',', '.'));
+        // Começar a partir do segundo elemento do array
+        for (int i = 1; i < parametro.length; i++) {
+            parametros[i - 1] = Double.parseDouble(parametro[i].replace(',', '.'));
         }
 
         ler.close();
 
         return parametros;
     }
-
 
     public static double fS(int dia, double[] S, double[] I, double[] parametros) {
         return (parametros[1] - (parametros[4] * S[dia - 1] * I[dia - 1]) - (parametros[1] * S[dia - 1]));
