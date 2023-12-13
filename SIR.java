@@ -1,6 +1,4 @@
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Scanner;
 
 public class SIR {
@@ -19,17 +17,25 @@ public class SIR {
     static Scanner ler = new Scanner(System.in);
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws FileNotFoundException  {
         double[] S = new double[numeroDeDias];
         double[] I = new double[numeroDeDias];
         double[] R = new double[numeroDeDias];
+
         S[0] = S0;
         I[0] = I0;
         R[0] = R0;
-        aplicarEuler(S, I, R);
-        aplicarRK4(S, I, R);
 
-        escreverResoltadosEmFicheiro(S, I, R);
+        System.out.print("Digite (1) caso queira aplicar o método de Euler\nDigite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem\n");
+        int num = ler.nextInt();
+        if (num == 1) {
+            aplicarEuler(S, I, R);
+        } else if (num == 2) {
+            aplicarRK4(S, I, R);
+        }
+
+
+        escreverResultadosEmFicheiro(S, I, R);
 
 
         /*double[] valoresIniciais = lerValoresIniciais();
@@ -42,17 +48,18 @@ public class SIR {
         System.out.println("Resultado final (y_n) pelo Método de Runge-Kutta: " + resultadoRunge);*/
     }
 
-    public static void escreverResoltadosEmFicheiro(double[] S, double[] I, double[] R) throws IOException {
-        try (PrintWriter writer = new PrintWriter(new FileWriter("resultados.txt"))) {
-            writer.printf("Dia\tS\tI\tR\tT\n");
 
-            for (int dia = 0; dia < numeroDeDias; dia++) {
+    public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R) throws FileNotFoundException {
+        PrintWriter out = new PrintWriter(new File("resultados.txt"));
 
-                double total = S[dia] + I[dia] + R[dia];
-                writer.printf("%d\t%.6f\t%.6f\t%.6f\t%.6f%n", dia, S[dia], I[dia], R[dia], total);
+        out.print("Dia       S               I               R               T          \n");
 
-            }
+        for (int dia = 0; dia < numeroDeDias; dia++) {
+            double total = S[dia] + I[dia] + R[dia];
+            out.printf("%d\t%12.4f\t%12.4f\t%12.4f\t%12.4f%n", dia, S[dia], I[dia], R[dia], total);
+
         }
+        out.close();
     }
 
     /*
@@ -92,63 +99,66 @@ public class SIR {
         parametros[6] = ler.nextDouble();
 
         return parametros;
+    }*/
+
+
+    public static double fS(int dia, double[] S, double[] I) {
+        return (λ - (b * S[dia - 1] * I[dia - 1]) - (µ * S[dia - 1]));
+    }
+
+    public static double fI(int dia, double[] S, double[] I, double[] R) {
+        return (b * S[dia - 1] * I[dia - 1] - k * I[dia - 1] + β * I[dia - 1] * R[dia - 1] - (µ + δ1) * I[dia - 1]);
+    }
+
+    public static double fR(int dia, double[] I, double[] R) {
+        return (k * I[dia - 1] - β * I[dia - 1] * R[dia - 1] - (µ + δ2) * R[dia - 1]);
     }
 
 
-    public static double fS(double S, double I, double λ, double b, double µ) {
-        return λ - (b * S * I) - (µ * S);
-    }
+    public static void aplicarEuler(double[] S, double[] I, double[] R) {
+        for (int dia = 1; dia < numeroDeDias; dia++) {
+            /*double dS = h * (λ - (b * S[dia-1] * I[dia-1]) - (µ * S[dia-1]));
+            double dI = h * (b * S[dia-1] * I[dia-1] - k * I[dia-1] + β * I[dia-1] * R[dia-1] - (µ + δ1) * I[dia-1]);
+            double dR = h * (k * I[dia-1] - β * I[dia-1] * R[dia-1] - (µ + δ2) * R[dia-1]);*/
+            double dS = h * fS(dia, S, I);
+            double dI = h * fI(dia, S, I, R);
+            double dR = h * fR(dia, I, R);
 
-    public static double fI(double S, double I, double R, double b, double k, double β, double µ, double δ1) {
-        return b * S * I - k * I + β * I * R - (µ + δ1) * I;
-    }
+            S[dia] = S[dia - 1] + dS;
+            I[dia] = I[dia - 1] + dI;
+            R[dia] = R[dia - 1] + dR;
 
-    public static double fR(double I, double R, double k, double β, double µ, double δ2) {
-        return k * I - β * I * R - (µ + δ2) * R;
-    }
-    /*
-     */
-
-    public static void aplicarEuler(double []S, double[]I, double[]R){
-        for (int dia = 0; dia < numeroDeDias; dia++) {
-            double dS = λ - (b * S[dia] * I[dia]) - (µ * S[dia]);
-            double dI = b * S[dia] * I[dia] - k * I[dia] + β * I[dia] * R[dia] - (µ + δ1) * I[dia];
-            double dR = k * I[dia] - β * I[dia] * R[dia] - (µ + δ2) * R[dia];
-            
-            S[dia] = S[dia] + h * dS;
-            I[dia] = I[dia] + h * dI;
-            R[dia] = R[dia] + h * dR;
 
         }
     }
-    
-    public static void aplicarRK4(double[]S, double[]I, double[]R){
-        for (int dia = 0; dia < numeroDeDias; dia++) {
 
-            double k1S = h *(λ - b * S[dia] * I[dia] - µ * S[dia]);
-            double k1I = h *(b * S[dia] * I[dia] - k * I[dia] + β * I[dia] * R[dia] - (µ + δ1) * I[dia]);
-            double k1R = h *(k * I[dia] - β * I[dia] * R[dia] - (µ + δ2) * R[dia]);
+    public static void aplicarRK4(double[] S, double[] I, double[] R) {
+        for (int dia = 1; dia < numeroDeDias; dia++) {
 
-            double k2S = h *(λ - b * (S[dia] + h / 2 * k1S) * (I[dia] + h / 2 * k1I) - µ * (S[dia] + h / 2 * k1S));
-            double k2I = h *(b * (S[dia] + h / 2 * k1S) * (I[dia] + h / 2 * k1I) - k * (I[dia] + h / 2 * k1I) + β * (I[dia] + h / 2 * k1I) * (R[dia] + h / 2 * k1R) - (µ + δ1) * (I[dia] + h / 2 * k1I));
-            double k2R = h *(k * (I[dia] + h / 2 * k1I) - β * (I[dia] + h / 2 * k1I) * (R[dia] + h / 2 * k1R) - (µ + δ2) * (R[dia] + h / 2 * k1R));
+            double k1S = fS(dia, S, I); // h *(λ - b * S[dia-1] * I[dia-1] - µ * S[dia-1]);
+            double k1I = fI(dia, S, I, R); // h *(b * S[dia-1] * I[dia-1] - k * I[dia-1] + β * I[dia-1] * R[dia-1] - (µ + δ1) * I[dia-1]);
+            double k1R = fR(dia, I, R); // h *(k * I[dia-1] - β * I[dia-1] * R[dia-1] - (µ + δ2) * R[dia-1]);
 
-            double k3S = h *(λ - b * (S[dia] + h / 2 * k2S) * (I[dia] + h / 2 * k2I) - µ * (S[dia] + h / 2 * k2S));
-            double k3I = h *(b * (S[dia] + h / 2 * k2S) * (I[dia] + h / 2 * k2I) - k * (I[dia] + h / 2 * k2I) + β * (I[dia] + h / 2 * k2I) * (R[dia] + h / 2 * k2R) - (µ + δ1) * (I[dia] + h / 2 * k2I));
-            double k3R = h *(k * (I[dia] + h / 2 * k2I) - β * (I[dia] + h / 2 * k2I) * (R[dia] + h / 2 * k2R) - (µ + δ2) * (R[dia] + h / 2 * k2R));
+            double k2S = h * (λ - b * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - µ * (S[dia - 1] + h / 2 * k1S));
+            double k2I = h * (b * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - k * (I[dia - 1] + h / 2 * k1I) + β * (I[dia - 1] + h / 2 * k1I) * (R[dia - 1] + h / 2 * k1R) - (µ + δ1) * (I[dia - 1] + h / 2 * k1I));
+            double k2R = h * (k * (I[dia - 1] + h / 2 * k1I) - β * (I[dia - 1] + h / 2 * k1I) * (R[dia - 1] + h / 2 * k1R) - (µ + δ2) * (R[dia - 1] + h / 2 * k1R));
 
-            double k4S = h *(λ - b * (S[dia] + h * k3S) * (I[dia] + h * k3I) - µ * (S[dia] + h * k3S));
-            double k4I = h *(b * (S[dia] + h * k3S) * (I[dia] + h * k3I) - k * (I[dia] + h * k3I) + β * (I[dia] + h * k3I) * (R[dia] + h * k3R) - (µ + δ1) * (I[dia] + h * k3I));
-            double k4R = h *(k * (I[dia] + h * k3I) - β * (I[dia] + h * k3I) * (R[dia] + h * k3R) - (µ + δ2) * (R[dia] + h * k3R));
+            double k3S = h * (λ - b * (S[dia - 1] + h / 2 * k2S) * (I[dia - 1] + h / 2 * k2I) - µ * (S[dia - 1] + h / 2 * k2S));
+            double k3I = h * (b * (S[dia - 1] + h / 2 * k2S) * (I[dia - 1] + h / 2 * k2I) - k * (I[dia - 1] + h / 2 * k2I) + β * (I[dia - 1] + h / 2 * k2I) * (R[dia - 1] + h / 2 * k2R) - (µ + δ1) * (I[dia - 1] + h / 2 * k2I));
+            double k3R = h * (k * (I[dia - 1] + h / 2 * k2I) - β * (I[dia - 1] + h / 2 * k2I) * (R[dia - 1] + h / 2 * k2R) - (µ + δ2) * (R[dia - 1] + h / 2 * k2R));
+
+            double k4S = h * (λ - b * (S[dia - 1] + h * k3S) * (I[dia - 1] + h * k3I) - µ * (S[dia - 1] + h * k3S));
+            double k4I = h * (b * (S[dia - 1] + h * k3S) * (I[dia - 1] + h * k3I) - k * (I[dia - 1] + h * k3I) + β * (I[dia - 1] + h * k3I) * (R[dia - 1] + h * k3R) - (µ + δ1) * (I[dia - 1] + h * k3I));
+            double k4R = h * (k * (I[dia - 1] + h * k3I) - β * (I[dia - 1] + h * k3I) * (R[dia - 1] + h * k3R) - (µ + δ2) * (R[dia - 1] + h * k3R));
 
             double kS = (k1S + 2 * k2S + 2 * k3S + k4S) / 6;
             double kI = (k1I + 2 * k2I + 2 * k3I + k4I) / 6;
             double kR = (k1R + 2 * k2R + 2 * k3R + k4R) / 6;
 
-            S[dia] = S[dia] + kS;
-            I[dia] = I[dia] + kI;
-            R[dia] = R[dia] + kR;
-            
+            S[dia] = S[dia - 1] + kS;
+            I[dia] = I[dia - 1] + kI;
+            R[dia] = R[dia - 1] + kR;
+
         }
     }/*
     public static double[] aplicarMetodoDeEuler(double[] valoresIniciais, double[] parametros) {
