@@ -4,7 +4,7 @@ import java.util.Scanner;
 public class SIR {
 
     static final String VALORES_INICIAIS = "estado_inicial.csv";
-    static final String PARAMETROS = "params_exemplo1.csv"
+    static final String PARAMETROS = "params_exemplo1.csv";
     // Parametros
     static double lambda = 0.04;
     static double b = 0.02;
@@ -46,7 +46,7 @@ public class SIR {
     }
 
 
-    public static double[] lerValoresIniciais() {
+    public static double[] lerValoresIniciais() throws FileNotFoundException {
         Scanner ler = new Scanner(new File(VALORES_INICIAIS));
         ler.nextLine();
                 
@@ -60,7 +60,7 @@ public class SIR {
         return valoresIniciais;
     }
 
-    public static double[] lerParametros() {
+    public static double[] lerParametros() throws FileNotFoundException {
         double[] parametros = new double[6];
         Scanner ler = new Scanner(new File(PARAMETROS));
         ler.nextLine();
