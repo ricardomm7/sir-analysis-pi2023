@@ -2,6 +2,9 @@ import java.io.*;
 import java.util.Scanner;
 
 public class SIR {
+
+    static final String VALORES_INICIAIS = "estado_inicial.csv";
+    static final String PARAMETROS = "params_exemplo1.csv"
     // Parametros
     static double lambda = 0.04;
     static double b = 0.02;
@@ -42,44 +45,41 @@ public class SIR {
        */
     }
 
-    /*
+
     public static double[] lerValoresIniciais() {
+        Scanner ler = new Scanner(new File(VALORES_INICIAIS));
+        ler.nextLine();
+                
         double[] valoresIniciais = new double[6];
-        System.out.print("Informe o valor inicial de  t0: ");
         valoresIniciais[0] = ler.nextDouble();
-        System.out.print("Informe o valor inicial de S(t0): ");
         valoresIniciais[1] = ler.nextDouble();
-        System.out.print("Informe o valor inicial de I(t0): ");
         valoresIniciais[2] = ler.nextDouble();
-        System.out.print("Informe o valor inicial de R(t0): ");
         valoresIniciais[3] = ler.nextDouble();
-        System.out.print("Informe o tamanho do passo h: ");
         valoresIniciais[4] = ler.nextDouble();
-        System.out.print("Informe o número de dias: ");
         valoresIniciais[5] = ler.nextDouble();
+        
+        ler.close();
 
         return valoresIniciais;
     }
 
     public static double[] lerParametros() {
         double[] parametros = new double[7];
-        System.out.print("Informe o valor do parametro λ: ");
+        Scanner ler = new Scanner(new File(PARAMETROS));
+        ler.nextLine();
+        
         parametros[0] = ler.nextDouble();
-        System.out.print("Informe o valor do parametro b: ");
         parametros[1] = ler.nextDouble();
-        System.out.print("Informe o valor do parametro k: ");
         parametros[2] = ler.nextDouble();
-        System.out.print("Informe o valor do parametro β: ");
         parametros[3] = ler.nextDouble();
-        System.out.print("Informe o valor do parametro µ: ");
         parametros[4] = ler.nextDouble();
-        System.out.print("Informe o valor do parametro δ1: ");
         parametros[5] = ler.nextDouble();
-        System.out.print("Informe o valor do parametro δ2: ");
         parametros[6] = ler.nextDouble();
 
+        ler.close();
+
         return parametros;
-    }*/
+    }
 
 
     public static double fS(int dia, double[] S, double[] I) {
