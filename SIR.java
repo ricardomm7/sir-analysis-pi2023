@@ -31,7 +31,7 @@ public class SIR {
         if (num == 1) {
             aplicarEuler(S, I, R, valoresIniciais);
         } else if (num == 2) {
-            aplicarRK4(S, I, R);
+            aplicarRK4(S, I, R, valoresIniciais);
         }
         System.out.print("Digite qual o passo de integração que deseja: ");
 
