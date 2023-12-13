@@ -4,14 +4,6 @@ import java.util.Scanner;
 public class SIR {
     static final String VALORES_INICIAIS = "estado_inicial.csv";
     static final String PARAMETROS = "params_exemplo1.csv";
-    // Parametros
-    static double lambda = 0.04;
-    static double b = 0.02;
-    static double k = 0.02;
-    static double beta = 0.03;  //Constante é sempre final e letraMAISCULA e _ se tiver mais que 1 palavra ex: TEST_TST
-    static double u = 0.04;
-    static double delta1 = 0;
-    static double delta2 = 0;
 
     //Informações a pedir ao utilizador acho eu
     static int numeroDeDias = 5;
@@ -29,9 +21,9 @@ public class SIR {
         System.out.print("Digite (1) caso queira aplicar o método de Euler\nDigite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem\n");
         int num = ler.nextInt();
         if (num == 1) {
-            aplicarEuler(S, I, R, valoresIniciais);
+            aplicarEuler(S, I, R, valoresIniciais, parametros);
         } else if (num == 2) {
-            aplicarRK4(S, I, R, valoresIniciais);
+            aplicarRK4(S, I, R, valoresIniciais, parametros);
         }
         System.out.print("Digite qual o passo de integração que deseja: ");
 
@@ -43,10 +35,12 @@ public class SIR {
         Scanner ler = new Scanner(new File(VALORES_INICIAIS));
         ler.nextLine();
 
-        double[] valoresIniciais = new double[3];
-        valoresIniciais[0] = ler.nextDouble();
-        valoresIniciais[1] = ler.nextDouble();
-        valoresIniciais[2] = ler.nextDouble();
+        String[] valores = ler.nextLine().split(";");
+        double[] valoresIniciais = new double[valores.length];
+
+        for (int i = 0; i < valores.length; i++) {
+            valoresIniciais[i] = Double.parseDouble(valores[i].replace(',', '.'));
+        }
 
         ler.close();
 
@@ -54,17 +48,15 @@ public class SIR {
     }
 
     public static double[] lerParametros() throws FileNotFoundException {
-        double[] parametros = new double[6];
+        double[] parametros = new double[7];
         Scanner ler = new Scanner(new File(PARAMETROS));
         ler.nextLine();
-        ler.nextDouble();
+        String[] parametro = ler.nextLine().split(";");
 
-        parametros[0] = ler.nextDouble();
-        parametros[1] = ler.nextDouble();
-        parametros[2] = ler.nextDouble();
-        parametros[3] = ler.nextDouble();
-        parametros[4] = ler.nextDouble();
-        parametros[5] = ler.nextDouble();
+
+        for (int i = 0; i < parametro.length; i++) {
+            parametros[i] = Double.parseDouble(parametro[i].replace(',', '.'));
+        }
 
         ler.close();
 
@@ -72,27 +64,27 @@ public class SIR {
     }
 
 
-    public static double fS(int dia, double[] S, double[] I) {
-        return (lambda - (b * S[dia - 1] * I[dia - 1]) - (u * S[dia - 1]));
+    public static double fS(int dia, double[] S, double[] I, double[] parametros) {
+        return (parametros[1] - (parametros[4] * S[dia - 1] * I[dia - 1]) - (parametros[1] * S[dia - 1]));
     }
 
-    public static double fI(int dia, double[] S, double[] I, double[] R) {
-        return (b * S[dia - 1] * I[dia - 1] - k * I[dia - 1] + beta * I[dia - 1] * R[dia - 1] - (u + delta1) * I[dia - 1]);
+    public static double fI(int dia, double[] S, double[] I, double[] R, double[] parametros) {
+        return (parametros[4] * S[dia - 1] * I[dia - 1] - parametros[2] * I[dia - 1] + parametros[3] * I[dia - 1] * R[dia - 1] - (parametros[1] + parametros[5]) * I[dia - 1]);
     }
 
-    public static double fR(int dia, double[] I, double[] R) {
-        return (k * I[dia - 1] - beta * I[dia - 1] * R[dia - 1] - (u + delta2) * R[dia - 1]);
+    public static double fR(int dia, double[] I, double[] R, double[] parametros) {
+        return (parametros[2] * I[dia - 1] - parametros[3] * I[dia - 1] * R[dia - 1] - (parametros[1] + parametros[6]) * R[dia - 1]);
     }
 
 
-    public static void aplicarEuler(double[] S, double[] I, double[] R, double[] valoresIniciais) {
+    public static void aplicarEuler(double[] S, double[] I, double[] R, double[] valoresIniciais, double[] parametros) {
         S[0] = valoresIniciais[0];
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
         for (int dia = 1; dia < numeroDeDias; dia++) {
-            double dS = h * fS(dia, S, I);
-            double dI = h * fI(dia, S, I, R);
-            double dR = h * fR(dia, I, R);
+            double dS = h * fS(dia, S, I, parametros);
+            double dI = h * fI(dia, S, I, R, parametros);
+            double dR = h * fR(dia, I, R, parametros);
 
             S[dia] = S[dia - 1] + dS;
             I[dia] = I[dia - 1] + dI;
@@ -100,28 +92,28 @@ public class SIR {
         }
     }
 
-    public static void aplicarRK4(double[] S, double[] I, double[] R, double[] valoresIniciais) {
+    public static void aplicarRK4(double[] S, double[] I, double[] R, double[] valoresIniciais, double[] parametros) {
         S[0] = valoresIniciais[0];
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
 
         for (int dia = 1; dia < numeroDeDias; dia++) {
 
-            double k1S = fS(dia, S, I);
-            double k1I = fI(dia, S, I, R);
-            double k1R = fR(dia, I, R);
+            double k1S = fS(dia, S, I, parametros);
+            double k1I = fI(dia, S, I, R, parametros);
+            double k1R = fR(dia, I, R, parametros);
 
-            double k2S = h * (lambda - b * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - u * (S[dia - 1] + h / 2 * k1S));
-            double k2I = h * (b * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - k * (I[dia - 1] + h / 2 * k1I) + beta * (I[dia - 1] + h / 2 * k1I) * (R[dia - 1] + h / 2 * k1R) - (u + delta1) * (I[dia - 1] + h / 2 * k1I));
-            double k2R = h * (k * (I[dia - 1] + h / 2 * k1I) - beta * (I[dia - 1] + h / 2 * k1I) * (R[dia - 1] + h / 2 * k1R) - (u + delta2) * (R[dia - 1] + h / 2 * k1R));
+            double k2S = h * (parametros[0] - parametros[4] * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - parametros[1] * (S[dia - 1] + h / 2 * k1S));
+            double k2I = h * (parametros[4] * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - parametros[2] * (I[dia - 1] + h / 2 * k1I) + parametros[3] * (I[dia - 1] + h / 2 * k1I) * (R[dia - 1] + h / 2 * k1R) - (parametros[1] + parametros[5]) * (I[dia - 1] + h / 2 * k1I));
+            double k2R = h * (parametros[2] * (I[dia - 1] + h / 2 * k1I) - parametros[3] * (I[dia - 1] + h / 2 * k1I) * (R[dia - 1] + h / 2 * k1R) - (parametros[1] + parametros[6]) * (R[dia - 1] + h / 2 * k1R));
 
-            double k3S = h * (lambda - b * (S[dia - 1] + h / 2 * k2S) * (I[dia - 1] + h / 2 * k2I) - u * (S[dia - 1] + h / 2 * k2S));
-            double k3I = h * (b * (S[dia - 1] + h / 2 * k2S) * (I[dia - 1] + h / 2 * k2I) - k * (I[dia - 1] + h / 2 * k2I) + beta * (I[dia - 1] + h / 2 * k2I) * (R[dia - 1] + h / 2 * k2R) - (u + delta1) * (I[dia - 1] + h / 2 * k2I));
-            double k3R = h * (k * (I[dia - 1] + h / 2 * k2I) - beta * (I[dia - 1] + h / 2 * k2I) * (R[dia - 1] + h / 2 * k2R) - (u + delta2) * (R[dia - 1] + h / 2 * k2R));
+            double k3S = h * (parametros[0] - parametros[4] * (S[dia - 1] + h / 2 * k2S) * (I[dia - 1] + h / 2 * k2I) - parametros[1] * (S[dia - 1] + h / 2 * k2S));
+            double k3I = h * (parametros[4] * (S[dia - 1] + h / 2 * k2S) * (I[dia - 1] + h / 2 * k2I) - parametros[2] * (I[dia - 1] + h / 2 * k2I) + parametros[3] * (I[dia - 1] + h / 2 * k2I) * (R[dia - 1] + h / 2 * k2R) - (parametros[1] + parametros[5]) * (I[dia - 1] + h / 2 * k2I));
+            double k3R = h * (parametros[2] * (I[dia - 1] + h / 2 * k2I) - parametros[3] * (I[dia - 1] + h / 2 * k2I) * (R[dia - 1] + h / 2 * k2R) - (parametros[1] + parametros[6]) * (R[dia - 1] + h / 2 * k2R));
 
-            double k4S = h * (lambda - b * (S[dia - 1] + h * k3S) * (I[dia - 1] + h * k3I) - u * (S[dia - 1] + h * k3S));
-            double k4I = h * (b * (S[dia - 1] + h * k3S) * (I[dia - 1] + h * k3I) - k * (I[dia - 1] + h * k3I) + beta * (I[dia - 1] + h * k3I) * (R[dia - 1] + h * k3R) - (u + delta1) * (I[dia - 1] + h * k3I));
-            double k4R = h * (k * (I[dia - 1] + h * k3I) - beta * (I[dia - 1] + h * k3I) * (R[dia - 1] + h * k3R) - (u + delta2) * (R[dia - 1] + h * k3R));
+            double k4S = h * (parametros[0] - parametros[4] * (S[dia - 1] + h * k3S) * (I[dia - 1] + h * k3I) - parametros[1] * (S[dia - 1] + h * k3S));
+            double k4I = h * (parametros[4] * (S[dia - 1] + h * k3S) * (I[dia - 1] + h * k3I) - parametros[2] * (I[dia - 1] + h * k3I) + parametros[3] * (I[dia - 1] + h * k3I) * (R[dia - 1] + h * k3R) - (parametros[1] + parametros[5]) * (I[dia - 1] + h * k3I));
+            double k4R = h * (parametros[2] * (I[dia - 1] + h * k3I) - parametros[3] * (I[dia - 1] + h * k3I) * (R[dia - 1] + h * k3R) - (parametros[1] + parametros[6]) * (R[dia - 1] + h * k3R));
 
             double kS = (k1S + 2 * k2S + 2 * k3S + k4S) / 6;
             double kI = (k1I + 2 * k2I + 2 * k3I + k4I) / 6;
