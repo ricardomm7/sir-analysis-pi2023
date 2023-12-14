@@ -12,7 +12,7 @@ public class SIR {
     static final String FORMAT =".csv";
     static final String PEDIR_DIAS ="Digite o número de dias desejado :";
     static final String PEDIR_PASSO ="Digite o número do passo (h) desejado :";
-    static final String PEDIR_METODO ="Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem";
+    static final String PEDIR_METODO ="Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem :";
     static Scanner ler = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -144,10 +144,10 @@ public class SIR {
 
     public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R, int numeroDeDias, String nomeDoFicheiro) throws FileNotFoundException {
         PrintWriter escrever = new PrintWriter(nomeDoFicheiro+FORMAT);
-        escrever.print("Dia       S               I               R               T          \n");
+        escrever.print("Dia;S;I;R;T\n");
         for (int dia = 0; dia < numeroDeDias; dia++) {
             double total = S[dia] + I[dia] + R[dia];
-            escrever.printf("%d\t%12.4f\t%12.4f\t%12.4f\t%12.4f%n", dia, S[dia], I[dia], R[dia], total);
+            escrever.printf("%d;%f;%f;%f;%f%n", dia, S[dia], I[dia], R[dia], total);
         }
         escrever.close();
     }
