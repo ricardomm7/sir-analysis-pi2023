@@ -35,9 +35,9 @@ public class SIR {
         String fichSGnu = "dataS.dat";
         String fichIGnu = "dataI.dat";
         String fichRGnu = "dataR.dat";
-        escreverPontoGnu(S, numeroDeDias, fichSGnu);
-        escreverPontoGnu(I, numeroDeDias, fichIGnu);
-        escreverPontoGnu(R, numeroDeDias, fichRGnu);
+        escreverPontosGnu(S, numeroDeDias, fichSGnu);
+        escreverPontosGnu(I, numeroDeDias, fichIGnu);
+        escreverPontosGnu(R, numeroDeDias, fichRGnu);
         executarGP();
     }
 
@@ -163,12 +163,12 @@ public class SIR {
         escrever.close();
     }
 
-    public static void escreverPontoGnu(double[] parametro, int numeroDeDias, String ficheiroGNU) throws FileNotFoundException {
+    public static void escreverPontosGnu(double[] parametro, int numeroDeDias, String ficheiroGNU) throws FileNotFoundException {
         PrintWriter escrever = new PrintWriter(ficheiroGNU);
         for (int dia = 0; dia < numeroDeDias; dia++) {
-            escrever.printf("%d %.6f%n", dia, parametro[dia]);
+            String valorFormatado = String.format("%d %.6f", dia, parametro[dia]).replace(',', '.');
+            escrever.println(valorFormatado);
         }
-        //trocar virgulas por pontos
         escrever.close();
     }
 
