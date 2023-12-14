@@ -16,6 +16,8 @@ public class SIR {
     static Scanner ler = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException {
+        executarPorComando(args);
+
         double[] valoresIniciais = lerValoresIniciais();
         double[] parametros = lerParametros();
 
@@ -40,6 +42,44 @@ public class SIR {
         escreverPontosGnu(R, numeroDeDias, fichRGnu);
         String fichExeGnu = "file.gp";
         executarGP(fichExeGnu);
+    }
+
+    public static void executarPorComando(String [] args) {
+        if ((args.length > 0 && args[0].equals("-h") || args[0].equals("--help"))) {
+            exibirMensagemAjuda();
+            System.exit(0);
+
+            String parametrosFile = obterValorArgumento(args, "-b", PARAMETROS);
+            String condicoesIniciaisFile = obterValorArgumento(args, "-c", VALORES_INICIAIS);
+            int metodo = Integer.parseInt(obterValorArgumento(args, "-m", "1"));
+            double passo = Double.parseDouble(obterValorArgumento(args, "-p", "0.1"));
+            int numeroDeDias1 = Integer.parseInt(obterValorArgumento(args, "-d", "5"));
+            String nomeFicheiro1 = obterValorArgumento(args, "-f", "resultados");
+
+        }
+    }
+
+
+    public static String obterValorArgumento(String[] args, String flag, String valorPadrao) {
+        for (int i = 0; i < args.length - 1; i++) {
+            if (args[i].equals(flag)) {
+                return args[i + 1];
+            }
+        }
+        return valorPadrao;
+    }
+
+    public static void exibirMensagemAjuda() {
+        System.out.println("SIR - Modelo Epidemiológico");
+        System.out.println("Sintaxe: java -jar SIR.jar [opções]");
+        System.out.println("Opções:");
+        System.out.println("  -b <arquivo>   Ficheiro de parâmetros (default: params_exemplo1.csv)");
+        System.out.println("  -c <arquivo>   Ficheiro de condições iniciais (default: estado_inicial.csv)");
+        System.out.println("  -m <metodo>    Método a usar (1-Euler ou 2-Runge Kutta de 4ª ordem) (default: 1)");
+        System.out.println("  -p <passo>     Passo de integração h (maior que zero e menor ou igual a um) (default: 0.1)");
+        System.out.println("  -d <dias>      Número de dias a considerar para análise (maior que zero) (default: 5)");
+        System.out.println("  -f <arquivo>   Nome do ficheiro de saída CSV (default: resultados.csv)");
+        System.out.println("  -h, --help     Exibir esta mensagem de ajuda");
     }
 
     public static void executarMetodo(int num, double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros) {
