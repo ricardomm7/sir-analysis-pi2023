@@ -10,6 +10,11 @@ public class SIR {
     static final int NUM_DIA_MAX = 1000000000;
     static final int NUM_METODOS = 2;
     static final String FORMAT = ".csv";
+    static final String FICH_S_GNU = "dataS.dat";
+    static final String FICH_I_GNU = "dataI.dat";
+    static final String FICH_R_GNU = "dataR.dat";
+    static final String FICH_GP = "file.gp";
+    static final String NOME_FICHEIRO_PNG = "export_visual_graph.png";
     static final String PEDIR_DIAS = "Digite o número de dias desejado :";
     static final String PEDIR_PASSO = "Digite o número do passo (h) desejado :";
     static final String PEDIR_METODO = "Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem :";
@@ -32,14 +37,10 @@ public class SIR {
 
         escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro);
 
-        String fichSGnu = "dataS.dat";
-        String fichIGnu = "dataI.dat";
-        String fichRGnu = "dataR.dat";
-        escreverPontosGnu(S, numeroDeDias, fichSGnu);
-        escreverPontosGnu(I, numeroDeDias, fichIGnu);
-        escreverPontosGnu(R, numeroDeDias, fichRGnu);
-        String fichExeGnu = "file.gp";
-        executarGP(fichExeGnu);
+        escreverPontosGnu(S, numeroDeDias, FICH_S_GNU);
+        escreverPontosGnu(I, numeroDeDias, FICH_I_GNU);
+        escreverPontosGnu(R, numeroDeDias, FICH_R_GNU);
+        executarGP(FICH_GP);
     }
 
     public static void executarMetodo(int num, double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros) {
@@ -112,14 +113,12 @@ public class SIR {
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
         for (int dia = 1; dia < numeroDeDias; dia++) {
-
             double dS = S[dia] + fS(S[dia - 1], I[dia - 1], parametros);
             double dI = I[dia] + fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros);
             double dR = R[dia] + fR(I[dia - 1], R[dia - 1], parametros);
             S[dia] = S[dia - 1] + dS;
             I[dia] = I[dia - 1] + dI;
             R[dia] = R[dia - 1] + dR;
-
         }
     }
 
@@ -180,7 +179,7 @@ public class SIR {
             String comando = "gnuplot " + caminhoScriptGP;
             ProcessBuilder pb = new ProcessBuilder("cmd", "/c", comando);
             pb.start();
-            System.out.println("A imagem foi gerada com sucesso! O nome do arquivo é 'export_visual_graph.png'");
+            System.out.println("A imagem foi gerada com sucesso! O nome do arquivo é " + NOME_FICHEIRO_PNG);
         } catch (IOException e) {
             System.out.println("Erro ao executar o script Gnuplot: " + e.getMessage());
         }
