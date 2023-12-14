@@ -38,7 +38,8 @@ public class SIR {
         escreverPontosGnu(S, numeroDeDias, fichSGnu);
         escreverPontosGnu(I, numeroDeDias, fichIGnu);
         escreverPontosGnu(R, numeroDeDias, fichRGnu);
-        executarGP();
+        String fichExeGnu = "file.gp";
+        executarGP(fichExeGnu);
     }
 
     public static void executarMetodo(int num, double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros) {
@@ -172,7 +173,16 @@ public class SIR {
         escrever.close();
     }
 
-    public static void executarGP() {
-//executar o file.gp
+    public static void executarGP(String nomeArquivo) {
+        try {
+            String diretorioAtual = System.getProperty("user.dir");
+            String caminhoScriptGP = diretorioAtual + File.separator + nomeArquivo;
+            String comando = "gnuplot " + caminhoScriptGP;
+            ProcessBuilder pb = new ProcessBuilder("cmd", "/c", comando);
+            pb.start();
+            System.out.println("A imagem foi gerada com sucesso! O nome do arquivo é 'euler_aproximation_visual_graph.png'");
+        } catch (IOException e) {
+            System.out.println("Erro ao executar o script Gnuplot: " + e.getMessage());
+        }
     }
 }
