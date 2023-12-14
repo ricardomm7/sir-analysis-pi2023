@@ -31,6 +31,14 @@ public class SIR {
         executarMetodo(numExcMet, S, I, R, h, numeroDeDias, valoresIniciais, parametros);
 
         escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro);
+
+        String fichSGnu = "dataS.dat";
+        String fichIGnu = "dataI.dat";
+        String fichRGnu = "dataR.dat";
+        escreverPontoGnu(S, numeroDeDias, fichSGnu);
+        escreverPontoGnu(I, numeroDeDias, fichIGnu);
+        escreverPontoGnu(R, numeroDeDias, fichRGnu);
+        executarGP();
     }
 
     public static void executarMetodo(int num, double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros) {
@@ -153,5 +161,18 @@ public class SIR {
             escrever.printf("%d;%.6f;%.6f;%.6f;%.6f%n", dia, S[dia], I[dia], R[dia], total);
         }
         escrever.close();
+    }
+
+    public static void escreverPontoGnu(double[] parametro, int numeroDeDias, String ficheiroGNU) throws FileNotFoundException {
+        PrintWriter escrever = new PrintWriter(ficheiroGNU);
+        for (int dia = 0; dia < numeroDeDias; dia++) {
+            escrever.printf("%d %.6f%n", dia, parametro[dia]);
+        }
+        //trocar virgulas por pontos
+        escrever.close();
+    }
+
+    public static void executarGP() {
+//executar o file.gp
     }
 }
