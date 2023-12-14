@@ -179,9 +179,9 @@ public class SIR {
             String comando = "gnuplot " + caminhoScriptGP;
             ProcessBuilder pb = new ProcessBuilder("cmd", "/c", comando);
             pb.start();
-            System.out.println("A imagem foi gerada com sucesso! O nome do arquivo é " + NOME_FICHEIRO_PNG);
+            System.out.println("A imagem foi gerada com sucesso! O nome do arquivo é " + NOME_FICHEIRO_PNG + ".");
         } catch (IOException e) {
-            System.out.println("Erro ao executar o script Gnuplot: " + e.getMessage());
+            System.out.println("Erro ao executar o script GnuPlot: " + e.getMessage());
         }
     }
 }
