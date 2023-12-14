@@ -153,9 +153,9 @@ public class SIR {
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
         for (int dia = 1; dia < numeroDeDias; dia++) {
-            double dS = S[dia] + fS(S[dia - 1], I[dia - 1], parametros);
-            double dI = I[dia] + fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros);
-            double dR = R[dia] + fR(I[dia - 1], R[dia - 1], parametros);
+            double dS = S[dia] + h * (fS(S[dia - 1], I[dia - 1], parametros));
+            double dI = I[dia] + h * (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros));
+            double dR = R[dia] + h * (fR(I[dia - 1], R[dia - 1], parametros));
             S[dia] = S[dia - 1] + dS;
             I[dia] = I[dia - 1] + dI;
             R[dia] = R[dia - 1] + dR;
@@ -167,21 +167,21 @@ public class SIR {
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
         for (int dia = 1; dia < numeroDeDias; dia++) {
-            double k1S = (fS(S[dia - 1], I[dia - 1], parametros));
-            double k1I = (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros));
-            double k1R = (fR(I[dia - 1], R[dia - 1], parametros));
+            double k1S = h * (fS(S[dia - 1], I[dia - 1], parametros));
+            double k1I = h * (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros));
+            double k1R = h * (fR(I[dia - 1], R[dia - 1], parametros));
 
-            double k2S = (fS(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, parametros));
-            double k2I = (fI(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros));
-            double k2R = (fR(I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros));
+            double k2S = h * (fS(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, parametros));
+            double k2I = h * (fI(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros));
+            double k2R = h * (fR(I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros));
 
-            double k3S = (fS(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, parametros));
-            double k3I = (fI(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, R[dia - 1] + h * k2R, parametros));
-            double k3R = (fR(I[dia - 1] + h * k2I, R[dia - 1] + h * k2R, parametros));
+            double k3S = h * (fS(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, parametros));
+            double k3I = h * (fI(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, R[dia - 1] + h * k2R, parametros));
+            double k3R = h * (fR(I[dia - 1] + h * k2I, R[dia - 1] + h * k2R, parametros));
 
-            double k4S = (fS(S[dia - 1] + h * k3S, I[dia - 1] + h * k3I, parametros));
-            double k4I = (fI(S[dia - 1] + h * k3S, I[dia - 1] + h * k3I, R[dia - 1] + h * k3R, parametros));
-            double k4R = (fR(I[dia - 1] + h * k3I, R[dia - 1] + h * k3R, parametros));
+            double k4S = h * (fS(S[dia - 1] + h * k3S, I[dia - 1] + h * k3I, parametros));
+            double k4I = h * (fI(S[dia - 1] + h * k3S, I[dia - 1] + h * k3I, R[dia - 1] + h * k3R, parametros));
+            double k4R = h * (fR(I[dia - 1] + h * k3I, R[dia - 1] + h * k3R, parametros));
 
             double kS = (k1S + 2 * k2S + 2 * k3S + k4S) / 6;
             double kI = (k1I + 2 * k2I + 2 * k3I + k4I) / 6;
