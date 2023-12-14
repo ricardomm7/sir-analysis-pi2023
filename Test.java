@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.Scanner;
 
-public class SIR {
+public class Test {
     static final String VALORES_INICIAIS = "estado_inicial.csv";
     static final String PARAMETROS = "params_exemplo1.csv";
     static final int LIMITE_INF_PASSO = 0;
@@ -12,16 +12,32 @@ public class SIR {
     static final String FORMAT =".csv";
     static final String PEDIR_DIAS ="Digite o número de dias desejado :";
     static final String PEDIR_PASSO ="Digite o número do passo (h) desejado :";
-    static final String PEDIR_METODO ="Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem :";
+    static final String PEDIR_METODO ="Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem";
     static Scanner ler = new Scanner(System.in);
 
-    public static void main(String[] args) throws FileNotFoundException {
-        double[] valoresIniciais = lerValoresIniciais();
-        double[] parametros = lerParametros();
+    static final String RESULTADOS_DEFAULT = "resultados.csv";
 
-        int numeroDeDias  = (int) pedirValorComUmPrint(NUM_DIA_MIN, NUM_DIA_MAX, PEDIR_DIAS) + 1;
+
+    public static void main(String[] args) throws FileNotFoundException {
+        if (args.length > 0 && (args[0].equals("-h") || args[0].equals("--help"))) {
+            exibirMensagemAjuda();
+            System.exit(0);
+        }
+        String parametrosFile = obterValorArgumento(args, "-b", PARAMETROS);
+        String condicoesIniciaisFile = obterValorArgumento(args, "-c", VALORES_INICIAIS);
+        int metodo = Integer.parseInt(obterValorArgumento(args, "-m", "1"));
+        double passo = Double.parseDouble(obterValorArgumento(args, "-p", "0.1"));
+        int numeroDeDias = Integer.parseInt(obterValorArgumento(args, "-d", "5"));
+        String nomeFicheiro = obterValorArgumento(args, "-f", RESULTADOS_DEFAULT);
+
+        double[] parametros = lerParametros();
+        double[] valoresIniciais = lerValoresIniciais();
+
+
+
+        numeroDeDias = (int) pedirValorComUmPrint(NUM_DIA_MIN, NUM_DIA_MAX, PEDIR_DIAS);
         double h = pedirValorComUmPrint(LIMITE_INF_PASSO,LIMITE_SUP_PASSO, PEDIR_PASSO);
-        String nomeFicheiro = criarNomeParaFicheiro();
+        nomeFicheiro = criarNomeParaFicheiro();
 
         double[] S = new double[numeroDeDias];
         double[] I = new double[numeroDeDias];
@@ -31,6 +47,27 @@ public class SIR {
         executarMetodo(numExcMet, S, I, R, h, numeroDeDias, valoresIniciais, parametros);
 
         escreverResultadosEmFicheiro(S, I, R, numeroDeDias,nomeFicheiro);
+    }
+    private static String obterValorArgumento(String[] args, String flag, String valorPadrao) {
+        for (int i = 0; i < args.length - 1; i++) {
+            if (args[i].equals(flag)) {
+                return args[i + 1];
+            }
+        }
+        return valorPadrao;
+    }
+
+    private static void exibirMensagemAjuda() {
+        System.out.println("SIR - Modelo Epidemiológico");
+        System.out.println("Sintaxe: java -jar seu_programa.jar [opções]");
+        System.out.println("Opções:");
+        System.out.println("  -b <arquivo>   Ficheiro de parâmetros (default: params_exemplo1.csv)");
+        System.out.println("  -c <arquivo>   Ficheiro de condições iniciais (default: estado_inicial.csv)");
+        System.out.println("  -m <metodo>    Método a usar (1-Euler ou 2-Runge Kutta de 4ª ordem) (default: 1)");
+        System.out.println("  -p <passo>     Passo de integração h (maior que zero e menor ou igual a um) (default: 0.1)");
+        System.out.println("  -d <dias>      Número de dias a considerar para análise (maior que zero) (default: 5)");
+        System.out.println("  -f <arquivo>   Nome do ficheiro de saída CSV (default: resultados.csv)");
+        System.out.println("  -h, --help     Exibir esta mensagem de ajuda");
     }
 
     public static void executarMetodo(int num,double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros ) {
@@ -49,8 +86,8 @@ public class SIR {
         return nome;
     }
     public static double pedirValorComUmPrint(int min, int max, String inform){
-         double num;
-         System.out.print(inform);
+        double num;
+        System.out.print(inform);
         do {
             num = ler.nextDouble();
             if (num < min || num > max){
@@ -144,10 +181,10 @@ public class SIR {
 
     public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R, int numeroDeDias, String nomeDoFicheiro) throws FileNotFoundException {
         PrintWriter escrever = new PrintWriter(nomeDoFicheiro+FORMAT);
-        escrever.print("Dia;S;I;R;T\n");
+        escrever.print("Dia       S               I               R               T          \n");
         for (int dia = 0; dia < numeroDeDias; dia++) {
             double total = S[dia] + I[dia] + R[dia];
-            escrever.printf("%d;%.6f;%.6f;%.6f;%.6f%n", dia, S[dia], I[dia], R[dia], total);
+            escrever.printf("%d\t%12.4f\t%12.4f\t%12.4f\t%12.4f%n", dia, S[dia], I[dia], R[dia], total);
         }
         escrever.close();
     }
