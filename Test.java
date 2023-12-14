@@ -123,15 +123,15 @@ public class Test {
     }
 
     public static double fS(int dia, double[] S, double[] I, double[] parametros) {
-        return (parametros[1] - (parametros[4] * S[dia - 1] * I[dia - 1]) - (parametros[1] * S[dia - 1]));
+        return (parametros[1] - (parametros[4] * S[dia - 1] * I[dia]) - (parametros[1] * S[dia]));
     }
 
     public static double fI(int dia, double[] S, double[] I, double[] R, double[] parametros) {
-        return (parametros[4] * S[dia - 1] * I[dia - 1] - parametros[2] * I[dia - 1] + parametros[3] * I[dia - 1] * R[dia - 1] - (parametros[1] + parametros[5]) * I[dia - 1]);
+        return (parametros[4] * S[dia] * I[dia] - parametros[2] * I[dia] + parametros[3] * I[dia] * R[dia] - (parametros[1] + parametros[5]) * I[dia]);
     }
 
     public static double fR(int dia, double[] I, double[] R, double[] parametros) {
-        return (parametros[2] * I[dia - 1] - parametros[3] * I[dia - 1] * R[dia - 1] - (parametros[1] + parametros[6]) * R[dia - 1]);
+        return (parametros[2] * I[dia] - parametros[3] * I[dia] * R[dia] - (parametros[1] + parametros[6]) * R[dia]);
     }
 
     public static void aplicarEuler(double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros) {
@@ -152,12 +152,13 @@ public class Test {
         S[0] = valoresIniciais[0];
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
+
         for (int dia = 1; dia < numeroDeDias; dia++) {
             double k1S = fS(dia, S, I, parametros);
             double k1I = fI(dia, S, I, R, parametros);
             double k1R = fR(dia, I, R, parametros);
 
-            double k2S = h * (parametros[0] - parametros[4] * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - parametros[1] * (S[dia - 1] + h / 2 * k1S));
+            double k2S = h * fS(dia, new double[]{S[dia - 1] + 0.5 * k1S},new double[]{I[dia-1] + 0},parametros); //(parametros[0] - parametros[4] * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - parametros[1] * (S[dia - 1] + h / 2 * k1S));
             double k2I = h * (parametros[4] * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - parametros[2] * (I[dia - 1] + h / 2 * k1I) + parametros[3] * (I[dia - 1] + h / 2 * k1I) * (R[dia - 1] + h / 2 * k1R) - (parametros[1] + parametros[5]) * (I[dia - 1] + h / 2 * k1I));
             double k2R = h * (parametros[2] * (I[dia - 1] + h / 2 * k1I) - parametros[3] * (I[dia - 1] + h / 2 * k1I) * (R[dia - 1] + h / 2 * k1R) - (parametros[1] + parametros[6]) * (R[dia - 1] + h / 2 * k1R));
 

@@ -9,52 +9,53 @@ public class SIR {
     static final int NUM_DIA_MIN = 1;
     static final int NUM_DIA_MAX = 1000000000;
     static final int NUM_METODOS = 2;
-    static final String FORMAT =".csv";
-    static final String PEDIR_DIAS ="Digite o número de dias desejado :";
-    static final String PEDIR_PASSO ="Digite o número do passo (h) desejado :";
-    static final String PEDIR_METODO ="Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem :";
+    static final String FORMAT = ".csv";
+    static final String PEDIR_DIAS = "Digite o número de dias desejado :";
+    static final String PEDIR_PASSO = "Digite o número do passo (h) desejado :";
+    static final String PEDIR_METODO = "Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem :";
     static Scanner ler = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException {
         double[] valoresIniciais = lerValoresIniciais();
         double[] parametros = lerParametros();
 
-        int numeroDeDias  = (int) pedirValorComUmPrint(NUM_DIA_MIN, NUM_DIA_MAX, PEDIR_DIAS) + 1;
-        double h = pedirValorComUmPrint(LIMITE_INF_PASSO,LIMITE_SUP_PASSO, PEDIR_PASSO);
+        int numeroDeDias = (int) pedirValorComUmPrint(NUM_DIA_MIN, NUM_DIA_MAX, PEDIR_DIAS) + 1;
+        double h = pedirValorComUmPrint(LIMITE_INF_PASSO, LIMITE_SUP_PASSO, PEDIR_PASSO);
         String nomeFicheiro = criarNomeParaFicheiro();
 
         double[] S = new double[numeroDeDias];
         double[] I = new double[numeroDeDias];
         double[] R = new double[numeroDeDias];
 
-        int numExcMet = (int) pedirValorComUmPrint(LIMITE_INF_PASSO,NUM_METODOS,PEDIR_METODO);
+        int numExcMet = (int) pedirValorComUmPrint(LIMITE_INF_PASSO, NUM_METODOS, PEDIR_METODO);
         executarMetodo(numExcMet, S, I, R, h, numeroDeDias, valoresIniciais, parametros);
 
-        escreverResultadosEmFicheiro(S, I, R, numeroDeDias,nomeFicheiro);
+        escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro);
     }
 
-    public static void executarMetodo(int num,double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros ) {
+    public static void executarMetodo(int num, double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros) {
         if (num == 1) {
             aplicarEuler(S, I, R, h, numeroDeDias, valoresIniciais, parametros);
         } else if (num == 2) {
-            aplicarRK4(S, I, R,h, numeroDeDias, valoresIniciais, parametros);
+            aplicarRK4(S, I, R, h, numeroDeDias, valoresIniciais, parametros);
         }
     }
 
-    public static String criarNomeParaFicheiro(){
+    public static String criarNomeParaFicheiro() {
         System.out.print("Coloque o nome para o ficheiro dos resultados [ex:results] :");
         String nome;
         ler.nextLine();
         nome = ler.nextLine();
         return nome;
     }
-    public static double pedirValorComUmPrint(int min, int max, String inform){
-         double num;
-         System.out.print(inform);
+
+    public static double pedirValorComUmPrint(int min, int max, String inform) {
+        double num;
+        System.out.print(inform);
         do {
             num = ler.nextDouble();
-            if (num < min || num > max){
-                System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: ["+min+","+max+"]");
+            if (num < min || num > max) {
+                System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: [" + min + "," + max + "]");
             }
         } while (num < min || num > max);
 
@@ -85,16 +86,16 @@ public class SIR {
         return parametros;
     }
 
-    public static double fS(int dia, double[] S, double[] I, double[] parametros) {
-        return (parametros[1] - (parametros[4] * S[dia - 1] * I[dia - 1]) - (parametros[1] * S[dia - 1]));
+    public static double fS(double S, double I, double[] parametros) {
+        return (parametros[1] - (parametros[4] * S * I) - (parametros[1] * S));
     }
 
-    public static double fI(int dia, double[] S, double[] I, double[] R, double[] parametros) {
-        return (parametros[4] * S[dia - 1] * I[dia - 1] - parametros[2] * I[dia - 1] + parametros[3] * I[dia - 1] * R[dia - 1] - (parametros[1] + parametros[5]) * I[dia - 1]);
+    public static double fI(double S, double I, double R, double[] parametros) {
+        return (parametros[4] * S * I - parametros[2] * I + parametros[3] * I * R - (parametros[1] + parametros[5]) * I);
     }
 
-    public static double fR(int dia, double[] I, double[] R, double[] parametros) {
-        return (parametros[2] * I[dia - 1] - parametros[3] * I[dia - 1] * R[dia - 1] - (parametros[1] + parametros[6]) * R[dia - 1]);
+    public static double fR(double I, double R, double[] parametros) {
+        return (parametros[2] * I - parametros[3] * I * R - (parametros[1] + parametros[6]) * R);
     }
 
     public static void aplicarEuler(double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros) {
@@ -102,12 +103,14 @@ public class SIR {
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
         for (int dia = 1; dia < numeroDeDias; dia++) {
-            double dS = h * fS(dia, S, I, parametros);
-            double dI = h * fI(dia, S, I, R, parametros);
-            double dR = h * fR(dia, I, R, parametros);
+
+            double dS = S[dia] + fS(S[dia - 1], I[dia - 1], parametros);
+            double dI = I[dia] + fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros);
+            double dR = R[dia] + fR(I[dia - 1], R[dia - 1], parametros);
             S[dia] = S[dia - 1] + dS;
             I[dia] = I[dia - 1] + dI;
             R[dia] = R[dia - 1] + dR;
+
         }
     }
 
@@ -116,21 +119,21 @@ public class SIR {
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
         for (int dia = 1; dia < numeroDeDias; dia++) {
-            double k1S = fS(dia, S, I, parametros);
-            double k1I = fI(dia, S, I, R, parametros);
-            double k1R = fR(dia, I, R, parametros);
+            double k1S = (fS(S[dia - 1], I[dia - 1], parametros));
+            double k1I = (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros));
+            double k1R = (fR(I[dia - 1], R[dia - 1], parametros));
 
-            double k2S = h * (parametros[0] - parametros[4] * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - parametros[1] * (S[dia - 1] + h / 2 * k1S));
-            double k2I = h * (parametros[4] * (S[dia - 1] + h / 2 * k1S) * (I[dia - 1] + h / 2 * k1I) - parametros[2] * (I[dia - 1] + h / 2 * k1I) + parametros[3] * (I[dia - 1] + h / 2 * k1I) * (R[dia - 1] + h / 2 * k1R) - (parametros[1] + parametros[5]) * (I[dia - 1] + h / 2 * k1I));
-            double k2R = h * (parametros[2] * (I[dia - 1] + h / 2 * k1I) - parametros[3] * (I[dia - 1] + h / 2 * k1I) * (R[dia - 1] + h / 2 * k1R) - (parametros[1] + parametros[6]) * (R[dia - 1] + h / 2 * k1R));
+            double k2S = (fS(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, parametros));
+            double k2I = (fI(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros));
+            double k2R = (fR(I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros));
 
-            double k3S = h * (parametros[0] - parametros[4] * (S[dia - 1] + h / 2 * k2S) * (I[dia - 1] + h / 2 * k2I) - parametros[1] * (S[dia - 1] + h / 2 * k2S));
-            double k3I = h * (parametros[4] * (S[dia - 1] + h / 2 * k2S) * (I[dia - 1] + h / 2 * k2I) - parametros[2] * (I[dia - 1] + h / 2 * k2I) + parametros[3] * (I[dia - 1] + h / 2 * k2I) * (R[dia - 1] + h / 2 * k2R) - (parametros[1] + parametros[5]) * (I[dia - 1] + h / 2 * k2I));
-            double k3R = h * (parametros[2] * (I[dia - 1] + h / 2 * k2I) - parametros[3] * (I[dia - 1] + h / 2 * k2I) * (R[dia - 1] + h / 2 * k2R) - (parametros[1] + parametros[6]) * (R[dia - 1] + h / 2 * k2R));
+            double k3S = (fS(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, parametros));
+            double k3I = (fI(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, R[dia - 1] + h * k2R, parametros));
+            double k3R = (fR(I[dia - 1] + h * k2I, R[dia - 1] + h * k2R, parametros));
 
-            double k4S = h * (parametros[0] - parametros[4] * (S[dia - 1] + h * k3S) * (I[dia - 1] + h * k3I) - parametros[1] * (S[dia - 1] + h * k3S));
-            double k4I = h * (parametros[4] * (S[dia - 1] + h * k3S) * (I[dia - 1] + h * k3I) - parametros[2] * (I[dia - 1] + h * k3I) + parametros[3] * (I[dia - 1] + h * k3I) * (R[dia - 1] + h * k3R) - (parametros[1] + parametros[5]) * (I[dia - 1] + h * k3I));
-            double k4R = h * (parametros[2] * (I[dia - 1] + h * k3I) - parametros[3] * (I[dia - 1] + h * k3I) * (R[dia - 1] + h * k3R) - (parametros[1] + parametros[6]) * (R[dia - 1] + h * k3R));
+            double k4S = (fS(S[dia - 1] + h * k3S, I[dia - 1] + h * k3I, parametros));
+            double k4I = (fI(S[dia - 1] + h * k3S, I[dia - 1] + h * k3I, R[dia - 1] + h * k3R, parametros));
+            double k4R = (fR(I[dia - 1] + h * k3I, R[dia - 1] + h * k3R, parametros));
 
             double kS = (k1S + 2 * k2S + 2 * k3S + k4S) / 6;
             double kI = (k1I + 2 * k2I + 2 * k3I + k4I) / 6;
@@ -143,7 +146,7 @@ public class SIR {
     }
 
     public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R, int numeroDeDias, String nomeDoFicheiro) throws FileNotFoundException {
-        PrintWriter escrever = new PrintWriter(nomeDoFicheiro+FORMAT);
+        PrintWriter escrever = new PrintWriter(nomeDoFicheiro + FORMAT);
         escrever.print("Dia;S;I;R;T\n");
         for (int dia = 0; dia < numeroDeDias; dia++) {
             double total = S[dia] + I[dia] + R[dia];
