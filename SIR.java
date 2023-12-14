@@ -4,42 +4,59 @@ import java.util.Scanner;
 public class SIR {
     static final String VALORES_INICIAIS = "estado_inicial.csv";
     static final String PARAMETROS = "params_exemplo1.csv";
-
     static final int LIMITE_INF_PASSO = 0;
     static final int LIMITE_SUP_PASSO = 1;
-
+    static final int NUM_DIA_MIN = 1;
+    static final int NUM_DIA_MAX = 1000000000;
+    static final int NUM_METODOS = 2;
+    static final String FORMAT =".csv";
+    static final String PEDIR_DIAS ="Digite o número de dias desejado :";
+    static final String PEDIR_PASSO ="Digite o número do passo (h) desejado :";
+    static final String PEDIR_METODO ="Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem";
     static Scanner ler = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException {
         double[] valoresIniciais = lerValoresIniciais();
         double[] parametros = lerParametros();
 
-        System.out.print("Digite qual o número de dias que deseja analisar: ");
-        int numeroDeDias = ler.nextInt();
-        System.out.print("Digite qual o passo de integração que deseja: ");
-        double h = validarNumero();
-
-
+        int numeroDeDias = (int) pedirValorComUmPrint(NUM_DIA_MIN, NUM_DIA_MAX, PEDIR_DIAS);
+        double h = pedirValorComUmPrint(LIMITE_INF_PASSO,LIMITE_SUP_PASSO, PEDIR_PASSO);
+        String nomeFicheiro = criarNomeParaFicheiro();
 
         double[] S = new double[numeroDeDias];
         double[] I = new double[numeroDeDias];
         double[] R = new double[numeroDeDias];
 
-        System.out.print("Digite (1) caso queira aplicar o método de Euler\nDigite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem\n");
-        int num = ler.nextInt();
+        int numExcMet = (int) pedirValorComUmPrint(LIMITE_INF_PASSO,NUM_METODOS,PEDIR_METODO);
+        executarMetodo(numExcMet, S, I, R, h, numeroDeDias, valoresIniciais, parametros);
+
+        escreverResultadosEmFicheiro(S, I, R, numeroDeDias,nomeFicheiro);
+    }
+
+    public static void executarMetodo(int num,double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros ) {
         if (num == 1) {
             aplicarEuler(S, I, R, h, numeroDeDias, valoresIniciais, parametros);
         } else if (num == 2) {
             aplicarRK4(S, I, R,h, numeroDeDias, valoresIniciais, parametros);
         }
-
-        escreverResultadosEmFicheiro(S, I, R, numeroDeDias);
     }
-    public static double validarNumero(){
+
+    public static String criarNomeParaFicheiro(){
+        System.out.print("Coloque o nome para o ficheiro dos resultados [ex:results] :");
+        String nome;
+        ler.nextLine();
+        nome = ler.nextLine();
+        return nome;
+    }
+    public static double pedirValorComUmPrint(int min, int max, String inform){
          double num;
+         System.out.print(inform);
         do {
             num = ler.nextDouble();
-        } while (num < LIMITE_INF_PASSO || num > LIMITE_SUP_PASSO);
+            if (num < min || num > max){
+                System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: ["+min+","+max+"]");
+            }
+        } while (num < min || num > max);
 
         return num;
     }
@@ -125,13 +142,13 @@ public class SIR {
         }
     }
 
-    public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R, int numeroDeDias) throws FileNotFoundException {
-        PrintWriter out = new PrintWriter("resultados.txt");
-        out.print("Dia       S               I               R               T          \n");
+    public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R, int numeroDeDias, String nomeDoFicheiro) throws FileNotFoundException {
+        PrintWriter escrever = new PrintWriter(nomeDoFicheiro+FORMAT);
+        escrever.print("Dia       S               I               R               T          \n");
         for (int dia = 0; dia < numeroDeDias; dia++) {
             double total = S[dia] + I[dia] + R[dia];
-            out.printf("%d\t%12.4f\t%12.4f\t%12.4f\t%12.4f%n", dia, S[dia], I[dia], R[dia], total);
+            escrever.printf("%d\t%12.4f\t%12.4f\t%12.4f\t%12.4f%n", dia, S[dia], I[dia], R[dia], total);
         }
-        out.close();
+        escrever.close();
     }
 }
