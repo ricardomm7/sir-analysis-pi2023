@@ -16,9 +16,9 @@ public class SIR {
     static final String FICH_R_GNU = "dataR.dat";
     static final String FICH_GP = "file.gp";
     static final String NOME_FICHEIRO_PNG = "export_visual_graph.png";
-    static final String PEDIR_DIAS = "Digite o número de dias desejado :";
-    static final String PEDIR_PASSO = "Digite o número do passo (h) desejado :";
-    static final String PEDIR_METODO = "Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem :";
+    static final String PEDIR_DIAS = "Digite o número de dias desejado: ";
+    static final String PEDIR_PASSO = "Digite o número do passo (h) desejado: ";
+    static final String PEDIR_METODO = "Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem: ";
     static final double VALOR_MIN = 0.0;
     static final double VALOR_MAX = 1.0;
     static Scanner ler = new Scanner(System.in);
@@ -27,13 +27,16 @@ public class SIR {
         if (args.length > 0) {
             executarPorComando(args);
         } else {
-            double[] valoresIniciais = lerValoresIniciais(VALORES_INICIAIS);
-            double[] parametros = lerParametros(PARAMETROS);
+            System.out.print("Insere o nome do ficheiro dos valores iniciais (deve estar na mesma pasta que o main.java): ");
+            String valoresiniciais = ler.nextLine();
+            double[] valoresIniciais = lerValoresIniciais(valoresiniciais);
+            String[] columnNamesEstado = getColumnNames(valoresiniciais);
+
+            System.out.print("Insere o nome do ficheiro dos parâmetros (deve estar na mesma pasta que o main.java): ");
+            String fichParametros = ler.nextLine();
+            double[] parametros = lerParametros(fichParametros);
+            String[] columnNamesParametro = getColumnNames(fichParametros);
             verificarPlausibilidade(valoresIniciais, parametros);
-
-            String[] columnNamesEstado = getColumnNames(VALORES_INICIAIS);
-            String[] columnNamesParametro = getColumnNames(PARAMETROS);
-
 
             int numeroDeDias = pedirNumeroDias(PEDIR_DIAS) + 1;
             double h = pedirValorComUmPrint(LIMITE_INF_PASSO, LIMITE_SUP_PASSO, PEDIR_PASSO);
