@@ -51,12 +51,12 @@ public class SIR {
     }
 
     public static void verificarPlausibilidade(double[] valoresIniciais, double[] parametros) {
-        if (!saoValoresPlausiveis(valoresIniciais)) {
+        if (saoValoresPlausiveis(valoresIniciais)) {
             System.out.println("ERRO: Valores iniciais não plausíveis.");
             System.exit(1);
         }
 
-        if (!saoValoresPlausiveis(parametros)) {
+        if (saoValoresPlausiveis(parametros)) {
             System.out.println("ERRO: Parâmetros não plausíveis.");
             System.exit(1);
         }
@@ -66,11 +66,10 @@ public class SIR {
         for (int i = 0; i < valores.length; i++) {
             double valor = valores[i];
             if (valor < VALOR_MIN || valor > VALOR_MAX) {
-                return false;
+                return true;
             }
         }
-
-        return true;
+        return false;
     }
 
 
