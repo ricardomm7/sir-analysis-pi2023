@@ -312,10 +312,7 @@ public class SIR {
     }
 
     public static boolean eInteiro(double numero) {
-        numero *= 10;
-        numero = Math.floor(numero);
-        numero /= 10;
-        return (float) numero % 1 == 0;
+        return numero % 1 == 0;
     }
 
     public static void escreverPontosGnu(double[] parametro, int numeroDeDias, String ficheiroGNU, double h) throws FileNotFoundException {
