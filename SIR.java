@@ -7,7 +7,6 @@ public class SIR {
     static final int LIMITE_INF_PASSO = 0;
     static final int LIMITE_SUP_PASSO = 1;
     static final int NUM_DIA_MIN = 0;
-    static final int NUM_DIA_MAX = 1000000000;
     static final int NUM_METODOS = 2;
     static final String FORMAT = ".csv";
     static final String FICH_S_GNU = "dataS.dat";
@@ -30,9 +29,11 @@ public class SIR {
             double[] parametros = lerParametros(PARAMETROS);
             verificarPlausibilidade(valoresIniciais, parametros);
 
-            int numeroDeDias = (int) pedirValorComUmPrint(NUM_DIA_MIN, NUM_DIA_MAX, PEDIR_DIAS) + 1;
+            int numeroDeDias = pedirNumeroDias(PEDIR_DIAS) + 1;
             double h = pedirValorComUmPrint(LIMITE_INF_PASSO, LIMITE_SUP_PASSO, PEDIR_PASSO);
+
             String nomeFicheiro = criarNomeParaFicheiro();
+
 
             double[] S = new double[(int) (numeroDeDias / h)];
             double[] I = new double[(int) (numeroDeDias / h)];
@@ -72,6 +73,22 @@ public class SIR {
         return false;
     }
 
+    public static int pedirNumeroDias(String mensagem) {
+        int numero;
+        System.out.print(mensagem);
+        do {
+            while (!ler.hasNextInt()) {
+                System.out.print("ERRO: Por favor, insira um número inteiro válido: ");
+                ler.next();
+            }
+            numero = ler.nextInt();
+            if (numero <= NUM_DIA_MIN) {
+                System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um número maior que zero: ");
+            }
+        } while (numero <= NUM_DIA_MIN);
+
+        return numero;
+    }
 
     public static void executarPorComando(String[] args) throws FileNotFoundException {
         if ((args[0].equals("-h") || args[0].equals("--help"))) {
