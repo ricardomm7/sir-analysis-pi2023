@@ -311,6 +311,9 @@ public class SIR {
     }
 
     public static boolean eInteiro(double numero) {
+        numero *= 10;
+        numero= Math.floor(numero);
+        numero /= 10;
         return numero % 1 == 0;
     }
 
