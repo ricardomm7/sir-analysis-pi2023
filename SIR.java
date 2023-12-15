@@ -7,7 +7,6 @@ public class SIR {
     static final int LIMITE_INF_PASSO = 0;
     static final int LIMITE_SUP_PASSO = 1;
     static final int NUM_DIA_MIN = 0;
-    static final int NUM_DIA_MAX = 1000000000;
     static final int NUM_METODOS = 2;
     static final String FORMAT = ".csv";
     static final String FICH_S_GNU = "dataS.dat";
@@ -18,6 +17,8 @@ public class SIR {
     static final String PEDIR_DIAS = "Digite o número de dias desejado :";
     static final String PEDIR_PASSO = "Digite o número do passo (h) desejado :";
     static final String PEDIR_METODO = "Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem :";
+    static final double VALOR_MIN = 0.0;
+    static final double VALOR_MAX = 1.0;
     static Scanner ler = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -28,9 +29,11 @@ public class SIR {
             String[] columnNamesEstado = getColumnNames(VALORES_INICIAIS);
             double[] parametros = lerParametros(PARAMETROS);
             String[] columnNamesParametro = getColumnNames(PARAMETROS);
+            verificarPlausibilidade(valoresIniciais, parametros);
 
-            int numeroDeDias = (int) pedirValorComUmPrint(NUM_DIA_MIN, NUM_DIA_MAX, PEDIR_DIAS) + 1;
+            int numeroDeDias = pedirNumeroDias(PEDIR_DIAS) + 1;
             double h = pedirValorComUmPrint(LIMITE_INF_PASSO, LIMITE_SUP_PASSO, PEDIR_PASSO);
+
             String nomeFicheiro = criarNomeParaFicheiro();
 
             double[] S = new double[(int) (numeroDeDias / h)];
@@ -47,6 +50,45 @@ public class SIR {
             escreverPontosGnu(R, numeroDeDias, FICH_R_GNU, h);
             executarGP(FICH_GP);
         }
+    }
+
+    public static void verificarPlausibilidade(double[] valoresIniciais, double[] parametros) {
+        if (saoValoresPlausiveis(valoresIniciais)) {
+            System.out.println("ERRO: Valores iniciais não plausíveis.");
+            System.exit(1);
+        }
+
+        if (saoValoresPlausiveis(parametros)) {
+            System.out.println("ERRO: Parâmetros não plausíveis.");
+            System.exit(1);
+        }
+    }
+
+    public static boolean saoValoresPlausiveis(double[] valores) {
+        for (int i = 0; i < valores.length; i++) {
+            double valor = valores[i];
+            if (valor < VALOR_MIN || valor > VALOR_MAX) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static int pedirNumeroDias(String mensagem) {
+        int numero;
+        System.out.print(mensagem);
+        do {
+            while (!ler.hasNextInt()) {
+                System.out.print("ERRO: Por favor, insira um número inteiro válido: ");
+                ler.next();
+            }
+            numero = ler.nextInt();
+            if (numero <= NUM_DIA_MIN) {
+                System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um número maior que zero: ");
+            }
+        } while (numero <= NUM_DIA_MIN);
+
+        return numero;
     }
 
     public static void executarPorComando(String[] args) throws FileNotFoundException {
@@ -268,7 +310,7 @@ public class SIR {
         escrever.close();
     }
 
-    private static boolean eInteiro(double numero) {
+    public static boolean eInteiro(double numero) {
         return numero % 1 == 0;
     }
 
