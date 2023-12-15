@@ -59,10 +59,9 @@ public class SIR {
         }
     }
 
-
     public static void verificarPlausibilidade(double[] valoresIniciais, double[] parametros) {
-        verificarNumeroElementos (valoresIniciais,MIN_VALORES_ESPERADOS, "valores iniciais");
-        verificarNumeroElementos (parametros, MIN_PARAMETROS_ESPERADOS, "parâmetros");
+        verificarNumeroElementos(valoresIniciais, MIN_VALORES_ESPERADOS, "valores iniciais");
+        verificarNumeroElementos(parametros, MIN_PARAMETROS_ESPERADOS, "parâmetros");
         if (saoValoresPlausiveis(valoresIniciais)) {
             System.out.println("ERRO: Valores iniciais não plausíveis.");
             System.exit(1);
@@ -73,7 +72,8 @@ public class SIR {
             System.exit(1);
         }
     }
-    public static void verificarNumeroElementos(double[] array, int numeroEsperado, String nome){
+
+    public static void verificarNumeroElementos(double[] array, int numeroEsperado, String nome) {
         if (array.length < numeroEsperado) {
             System.out.println("ERRO: O número de " + nome + " deve ser " + numeroEsperado + ".");
             System.exit(1);
@@ -138,7 +138,6 @@ public class SIR {
         }
     }
 
-
     public static String obterValorArgumento(String[] args, String flag, String valorPadrao) {
         for (int i = 0; i < args.length - 1; i++) {
             if (args[i].equals(flag)) {
@@ -199,7 +198,6 @@ public class SIR {
         return -1;
     }
 
-
     public static String[] getColumnNames(String file) throws FileNotFoundException {
         Scanner ler = new Scanner(new File(file));
         return ler.next().split(";");
@@ -216,7 +214,6 @@ public class SIR {
         for (int i = 0; i < splitStr.length; i++) {
             valoresIniciais[i] = Double.parseDouble(splitStr[i].replace(',', '.'));
         }
-
 
         ler.close();
         return valoresIniciais;
