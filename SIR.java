@@ -18,6 +18,8 @@ public class SIR {
     static final String PEDIR_DIAS = "Digite o número de dias desejado :";
     static final String PEDIR_PASSO = "Digite o número do passo (h) desejado :";
     static final String PEDIR_METODO = "Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem :";
+    static final double VALOR_MIN = 0.0;
+    static final double VALOR_MAX = 1.0;
     static Scanner ler = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -26,6 +28,7 @@ public class SIR {
         } else {
             double[] valoresIniciais = lerValoresIniciais(VALORES_INICIAIS);
             double[] parametros = lerParametros(PARAMETROS);
+            verificarPlausibilidade(valoresIniciais, parametros);
 
             int numeroDeDias = (int) pedirValorComUmPrint(NUM_DIA_MIN, NUM_DIA_MAX, PEDIR_DIAS) + 1;
             double h = pedirValorComUmPrint(LIMITE_INF_PASSO, LIMITE_SUP_PASSO, PEDIR_PASSO);
@@ -46,6 +49,30 @@ public class SIR {
             executarGP(FICH_GP);
         }
     }
+
+    public static void verificarPlausibilidade(double[] valoresIniciais, double[] parametros) {
+        if (!saoValoresPlausiveis(valoresIniciais)) {
+            System.out.println("ERRO: Valores iniciais não plausíveis.");
+            System.exit(1);
+        }
+
+        if (!saoValoresPlausiveis(parametros)) {
+            System.out.println("ERRO: Parâmetros não plausíveis.");
+            System.exit(1);
+        }
+    }
+
+    public static boolean saoValoresPlausiveis(double[] valores) {
+        for (int i = 0; i < valores.length; i++) {
+            double valor = valores[i];
+            if (valor < VALOR_MIN || valor > VALOR_MAX) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 
     public static void executarPorComando(String[] args) throws FileNotFoundException {
         if ((args[0].equals("-h") || args[0].equals("--help"))) {
