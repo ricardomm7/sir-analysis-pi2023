@@ -147,7 +147,7 @@ public class SIR {
 
     public static void executarMetodo(int num, double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros, String[] columnNamesEstado, String[] columnNamesParametro) {
         if (num == 1) {
-            aplicarEuler(S, I, R, h, numeroDeDias, valoresIniciais, parametros,columnNamesEstado, columnNamesParametro);
+            aplicarEuler(S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesEstado, columnNamesParametro);
         } else if (num == 2) {
             aplicarRK4(S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesParametro);
         }
@@ -174,9 +174,9 @@ public class SIR {
         return num;
     }
 
-    public static int findColumnByName(String[] columns, String label){
+    public static int findColumnByName(String[] columns, String label) {
         for (int i = 0; i < columns.length; i++) {
-            if(columns[i].equals(label)){
+            if (columns[i].equals(label)) {
                 return i;
             }
         }
@@ -188,6 +188,7 @@ public class SIR {
         Scanner ler = new Scanner(new File(file));
         return ler.next().split(";");
     }
+
     public static double[] lerValoresIniciais(String file) throws FileNotFoundException {
         Scanner ler = new Scanner(new File(file));
         String[] valores = ler.next().split(";");
@@ -223,33 +224,33 @@ public class SIR {
     }
 
     public static double fS(double S, double I, double[] parametros, String[] columnNamesParametro) {
-        int indexLambda = findColumnByName(columnNamesParametro,"lambda");
-        int index_b = findColumnByName(columnNamesParametro,"b");
+        int indexLambda = findColumnByName(columnNamesParametro, "lambda");
+        int index_b = findColumnByName(columnNamesParametro, "b");
         return (parametros[indexLambda] - (parametros[index_b] * S * I) - (parametros[indexLambda] * S));
     }
 
     public static double fI(double S, double I, double R, double[] parametros, String[] columnNamesParametro) {
-        int indexMU = findColumnByName(columnNamesParametro,"mu");
-        int indexKapa = findColumnByName(columnNamesParametro,"kapa");
-        int indexBeta = findColumnByName(columnNamesParametro,"beta");
-        int index_b = findColumnByName(columnNamesParametro,"b");
-        int indexDelta1 = findColumnByName(columnNamesParametro,"delta1");
+        int indexMU = findColumnByName(columnNamesParametro, "mu");
+        int indexKapa = findColumnByName(columnNamesParametro, "kapa");
+        int indexBeta = findColumnByName(columnNamesParametro, "beta");
+        int index_b = findColumnByName(columnNamesParametro, "b");
+        int indexDelta1 = findColumnByName(columnNamesParametro, "delta1");
         return (parametros[index_b] * S * I - parametros[indexKapa] * I + parametros[indexBeta] * I * R - (parametros[indexMU] + parametros[indexDelta1]) * I);
     }
 
     public static double fR(double I, double R, double[] parametros, String[] columnNamesParametro) {
-        int indexMU = findColumnByName(columnNamesParametro,"mu");
-        int indexKapa = findColumnByName(columnNamesParametro,"kapa");
-        int indexBeta = findColumnByName(columnNamesParametro,"beta");
-        int indexDelta2 = findColumnByName(columnNamesParametro,"delta2");
+        int indexMU = findColumnByName(columnNamesParametro, "mu");
+        int indexKapa = findColumnByName(columnNamesParametro, "kapa");
+        int indexBeta = findColumnByName(columnNamesParametro, "beta");
+        int indexDelta2 = findColumnByName(columnNamesParametro, "delta2");
 
         return (parametros[indexKapa] * I - parametros[indexBeta] * I * R - (parametros[indexMU] + parametros[indexDelta2]) * R);
     }
 
     public static void aplicarEuler(double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros, String[] columnNamesEstado, String[] columnNamesParametro) {
-        int indexS0 = findColumnByName(columnNamesEstado,"S0");
-        int indexI0 = findColumnByName(columnNamesEstado,"I0");
-        int indexR0 = findColumnByName(columnNamesEstado,"R0");
+        int indexS0 = findColumnByName(columnNamesEstado, "S0");
+        int indexI0 = findColumnByName(columnNamesEstado, "I0");
+        int indexR0 = findColumnByName(columnNamesEstado, "R0");
 
         S[0] = valoresIniciais[indexS0];
         I[0] = valoresIniciais[indexI0];
@@ -269,13 +270,13 @@ public class SIR {
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
         for (int dia = 1; dia < ((int) (numeroDeDias / h)); dia++) {
-            double k1S = h * (fS(S[dia - 1], I[dia - 1], parametros,columnNamesParametro));
+            double k1S = h * (fS(S[dia - 1], I[dia - 1], parametros, columnNamesParametro));
             double k1I = h * (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros, columnNamesParametro));
             double k1R = h * (fR(I[dia - 1], R[dia - 1], parametros, columnNamesParametro));
 
             double k2S = h * (fS(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, parametros, columnNamesParametro));
             double k2I = h * (fI(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros, columnNamesParametro));
-            double k2R = h * (fR(I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros,columnNamesParametro));
+            double k2R = h * (fR(I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros, columnNamesParametro));
 
             double k3S = h * (fS(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, parametros, columnNamesParametro));
             double k3I = h * (fI(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, R[dia - 1] + h * k2R, parametros, columnNamesParametro));
@@ -312,7 +313,7 @@ public class SIR {
 
     public static boolean eInteiro(double numero) {
         numero *= 10;
-        numero= Math.floor(numero);
+        numero = Math.floor(numero);
         numero /= 10;
         return (float) numero % 1 == 0;
     }
