@@ -24,7 +24,6 @@ public class SIR {
         if (args.length > 0) {
             executarPorComando(args);
         } else {
-
             double[] valoresIniciais = lerValoresIniciais(VALORES_INICIAIS);
             double[] parametros = lerParametros(PARAMETROS);
 
