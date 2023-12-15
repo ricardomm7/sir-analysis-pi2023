@@ -6,76 +6,58 @@ public class SIR {
     static final String PARAMETROS = "params_exemplo1.csv";
     static final int LIMITE_INF_PASSO = 0;
     static final int LIMITE_SUP_PASSO = 1;
-    static final int NUM_DIA_MIN = 0;
+    static final int NUM_DIA_MIN = 1;
     static final int NUM_DIA_MAX = 1000000000;
     static final int NUM_METODOS = 2;
     static final String FORMAT = ".csv";
     static final String FICH_S_GNU = "dataS.dat";
     static final String FICH_I_GNU = "dataI.dat";
     static final String FICH_R_GNU = "dataR.dat";
-    static final String FICH_EXE_GNU = "file.gp";
+    static final String FICH_GP = "file.gp";
+    static final String NOME_FICHEIRO_PNG = "export_visual_graph.png";
     static final String PEDIR_DIAS = "Digite o número de dias desejado :";
     static final String PEDIR_PASSO = "Digite o número do passo (h) desejado :";
     static final String PEDIR_METODO = "Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem :";
     static Scanner ler = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException {
-        if (args.length > 0) {
-            executarPorComando(args);
-        } else {
+        //executarPorComando(args);
 
-            double[] valoresIniciais = lerValoresIniciais(VALORES_INICIAIS);
-            double[] parametros = lerParametros(PARAMETROS);
+        double[] valoresIniciais = lerValoresIniciais();
+        double[] parametros = lerParametros();
 
-            int numeroDeDias = (int) pedirValorComUmPrint(NUM_DIA_MIN, NUM_DIA_MAX, PEDIR_DIAS) + 1;
-            double h = pedirValorComUmPrint(LIMITE_INF_PASSO, LIMITE_SUP_PASSO, PEDIR_PASSO);
-            String nomeFicheiro = criarNomeParaFicheiro();
+        int numeroDeDias = (int) pedirValorComUmPrint(NUM_DIA_MIN, NUM_DIA_MAX, PEDIR_DIAS) + 1;
+        double h = pedirValorComUmPrint(LIMITE_INF_PASSO, LIMITE_SUP_PASSO, PEDIR_PASSO);
+        String nomeFicheiro = criarNomeParaFicheiro();
 
-            double[] S = new double[numeroDeDias];
-            double[] I = new double[numeroDeDias];
-            double[] R = new double[numeroDeDias];
+        double[] S = new double[(int) (numeroDeDias / h)];
+        double[] I = new double[(int) (numeroDeDias / h)];
+        double[] R = new double[(int) (numeroDeDias / h)];
 
-            int numExcMet = (int) pedirValorComUmPrint(LIMITE_INF_PASSO, NUM_METODOS, PEDIR_METODO);
-            executarMetodo(numExcMet, S, I, R, h, numeroDeDias, valoresIniciais, parametros);
+        int numExcMet = (int) pedirValorComUmPrint(LIMITE_INF_PASSO, NUM_METODOS, PEDIR_METODO);
+        executarMetodo(numExcMet, S, I, R, h, numeroDeDias, valoresIniciais, parametros);
 
-            escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro);
+        escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro, h);
 
-            escreverPontosGnu(S, numeroDeDias, FICH_S_GNU);
-            escreverPontosGnu(I, numeroDeDias, FICH_I_GNU);
-            escreverPontosGnu(R, numeroDeDias, FICH_R_GNU);
-
-            executarGP(FICH_EXE_GNU);
-        }
-    }
-
-    public static void executarPorComando(String[] args) throws FileNotFoundException {
-        if ((args[0].equals("-h") || args[0].equals("--help"))) {
-            exibirMensagemAjuda();
-            System.exit(0);
-        }
-
-        String parametrosFile = obterValorArgumento(args, "-b", PARAMETROS);
-        String condicoesIniciaisFile = obterValorArgumento(args, "-c", VALORES_INICIAIS);
-        int metodo = Integer.parseInt(obterValorArgumento(args, "-m", "1"));
-        double passo = Double.parseDouble(obterValorArgumento(args, "-p", "0.1"));
-        int numeroDeDias = Integer.parseInt(obterValorArgumento(args, "-d", "5"));
-        String nomeFicheiro = obterValorArgumento(args, "-f", "resultados");
-
-        double[] S = new double[numeroDeDias];
-        double[] I = new double[numeroDeDias];
-        double[] R = new double[numeroDeDias];
-
-        double[] valoresIniciais = lerValoresIniciais(condicoesIniciaisFile);
-        double[] parametros = lerParametros(parametrosFile);
-
-        executarMetodo(metodo, S, I, R, passo, numeroDeDias, valoresIniciais, parametros);
-        escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro);
         escreverPontosGnu(S, numeroDeDias, FICH_S_GNU);
         escreverPontosGnu(I, numeroDeDias, FICH_I_GNU);
         escreverPontosGnu(R, numeroDeDias, FICH_R_GNU);
-        executarGP(FICH_EXE_GNU);
+        executarGP(FICH_GP);
+    }
 
-        System.exit(0);
+    public static void executarPorComando(String[] args) {
+        if ((args.length > 0 && args[0].equals("-h") || args[0].equals("--help"))) {
+            exibirMensagemAjuda();
+            System.exit(0);
+
+            String parametrosFile = obterValorArgumento(args, "-b", PARAMETROS);
+            String condicoesIniciaisFile = obterValorArgumento(args, "-c", VALORES_INICIAIS);
+            int metodo = Integer.parseInt(obterValorArgumento(args, "-m", "1"));
+            double passo = Double.parseDouble(obterValorArgumento(args, "-p", "0.1"));
+            int numeroDeDias1 = Integer.parseInt(obterValorArgumento(args, "-d", "5"));
+            String nomeFicheiro1 = obterValorArgumento(args, "-f", "resultados");
+
+        }
     }
 
 
@@ -122,16 +104,16 @@ public class SIR {
         System.out.print(inform);
         do {
             num = ler.nextDouble();
-            if (num <= min || num > max) {
+            if (num < min || num > max) {
                 System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: [" + min + "," + max + "]");
             }
-        } while (num <= min || num > max);
+        } while (num < min || num > max);
 
         return num;
     }
 
-    public static double[] lerValoresIniciais(String file) throws FileNotFoundException {
-        Scanner ler = new Scanner(new File(file));
+    public static double[] lerValoresIniciais() throws FileNotFoundException {
+        Scanner ler = new Scanner(new File(VALORES_INICIAIS));
         ler.nextLine();
         String[] valores = ler.nextLine().split(";");
         double[] valoresIniciais = new double[valores.length];
@@ -142,9 +124,9 @@ public class SIR {
         return valoresIniciais;
     }
 
-    public static double[] lerParametros(String file) throws FileNotFoundException {
+    public static double[] lerParametros() throws FileNotFoundException {
         double[] parametros = new double[7];
-        Scanner ler = new Scanner(new File(file));
+        Scanner ler = new Scanner(new File(PARAMETROS));
         ler.nextLine();
         String[] parametro = ler.nextLine().split(";");
         for (int i = 1; i < parametro.length; i++) {
@@ -170,15 +152,13 @@ public class SIR {
         S[0] = valoresIniciais[0];
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
-        for (int dia = 1; dia < numeroDeDias; dia++) {
-
-            double dS = S[dia] + fS(S[dia - 1], I[dia - 1], parametros);
-            double dI = I[dia] + fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros);
-            double dR = R[dia] + fR(I[dia - 1], R[dia - 1], parametros);
+        for (int dia = 1; dia < ((int) (numeroDeDias / h)); dia++) {
+            double dS = S[dia] + h * (fS(S[dia - 1], I[dia - 1], parametros));
+            double dI = I[dia] + h * (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros));
+            double dR = R[dia] + h * (fR(I[dia - 1], R[dia - 1], parametros));
             S[dia] = S[dia - 1] + dS;
             I[dia] = I[dia - 1] + dI;
             R[dia] = R[dia - 1] + dR;
-
         }
     }
 
@@ -187,21 +167,21 @@ public class SIR {
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
         for (int dia = 1; dia < numeroDeDias; dia++) {
-            double k1S = (fS(S[dia - 1], I[dia - 1], parametros));
-            double k1I = (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros));
-            double k1R = (fR(I[dia - 1], R[dia - 1], parametros));
+            double k1S = h * (fS(S[dia - 1], I[dia - 1], parametros));
+            double k1I = h * (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros));
+            double k1R = h * (fR(I[dia - 1], R[dia - 1], parametros));
 
-            double k2S = (fS(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, parametros));
-            double k2I = (fI(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros));
-            double k2R = (fR(I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros));
+            double k2S = h * (fS(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, parametros));
+            double k2I = h * (fI(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros));
+            double k2R = h * (fR(I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros));
 
-            double k3S = (fS(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, parametros));
-            double k3I = (fI(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, R[dia - 1] + h * k2R, parametros));
-            double k3R = (fR(I[dia - 1] + h * k2I, R[dia - 1] + h * k2R, parametros));
+            double k3S = h * (fS(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, parametros));
+            double k3I = h * (fI(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, R[dia - 1] + h * k2R, parametros));
+            double k3R = h * (fR(I[dia - 1] + h * k2I, R[dia - 1] + h * k2R, parametros));
 
-            double k4S = (fS(S[dia - 1] + h * k3S, I[dia - 1] + h * k3I, parametros));
-            double k4I = (fI(S[dia - 1] + h * k3S, I[dia - 1] + h * k3I, R[dia - 1] + h * k3R, parametros));
-            double k4R = (fR(I[dia - 1] + h * k3I, R[dia - 1] + h * k3R, parametros));
+            double k4S = h * (fS(S[dia - 1] + h * k3S, I[dia - 1] + h * k3I, parametros));
+            double k4I = h * (fI(S[dia - 1] + h * k3S, I[dia - 1] + h * k3I, R[dia - 1] + h * k3R, parametros));
+            double k4R = h * (fR(I[dia - 1] + h * k3I, R[dia - 1] + h * k3R, parametros));
 
             double kS = (k1S + 2 * k2S + 2 * k3S + k4S) / 6;
             double kI = (k1I + 2 * k2I + 2 * k3I + k4I) / 6;
@@ -213,14 +193,23 @@ public class SIR {
         }
     }
 
-    public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R, int numeroDeDias, String nomeDoFicheiro) throws FileNotFoundException {
+    public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R, int numeroDeDias, String nomeDoFicheiro, double h) throws FileNotFoundException {
         PrintWriter escrever = new PrintWriter(nomeDoFicheiro + FORMAT);
         escrever.print("Dia;S;I;R;T\n");
-        for (int dia = 0; dia < numeroDeDias; dia++) {
-            double total = S[dia] + I[dia] + R[dia];
-            escrever.printf("%d;%.6f;%.6f;%.6f;%.6f%n", dia, S[dia], I[dia], R[dia], total);
+        double varAux = 0;
+        for (int dia = 0; dia < ((int) (numeroDeDias / h)); dia++) {
+            if (eInteiro(varAux)) {
+                int diaUnitario = (int) varAux;
+                double total = S[dia] + I[dia] + R[dia];
+                escrever.printf("%d;%.6f;%.6f;%.6f;%.6f%n", diaUnitario, S[dia], I[dia], R[dia], total);
+            }
+            varAux += h;
         }
         escrever.close();
+    }
+
+    private static boolean eInteiro(double numero) {
+        return numero % 1 == 0;
     }
 
     public static void escreverPontosGnu(double[] parametro, int numeroDeDias, String ficheiroGNU) throws FileNotFoundException {
@@ -239,9 +228,9 @@ public class SIR {
             String comando = "gnuplot " + caminhoScriptGP;
             ProcessBuilder pb = new ProcessBuilder("cmd", "/c", comando);
             pb.start();
-            System.out.println("A imagem foi gerada com sucesso! O nome do arquivo é 'export_visual_graph.png'");
+            System.out.println("A imagem foi gerada com sucesso! O nome do arquivo é " + NOME_FICHEIRO_PNG + ".");
         } catch (IOException e) {
-            System.out.println("Erro ao executar o script Gnuplot: " + e.getMessage());
+            System.out.println("Erro ao executar o script GnuPlot: " + e.getMessage());
         }
     }
 }
