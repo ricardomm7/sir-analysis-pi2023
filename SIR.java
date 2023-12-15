@@ -23,7 +23,7 @@ public class SIR {
     public static void main(String[] args) throws FileNotFoundException {
         if (args.length > 0) {
             executarPorComando(args);
-        }else {
+        } else {
 
             double[] valoresIniciais = lerValoresIniciais(VALORES_INICIAIS);
             double[] parametros = lerParametros(PARAMETROS);
@@ -41,9 +41,9 @@ public class SIR {
 
             escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro, h);
 
-            escreverPontosGnu(S, numeroDeDias, FICH_S_GNU);
-            escreverPontosGnu(I, numeroDeDias, FICH_I_GNU);
-            escreverPontosGnu(R, numeroDeDias, FICH_R_GNU);
+            escreverPontosGnu(S, numeroDeDias, FICH_S_GNU, h);
+            escreverPontosGnu(I, numeroDeDias, FICH_I_GNU, h);
+            escreverPontosGnu(R, numeroDeDias, FICH_R_GNU, h);
             executarGP(FICH_GP);
         }
     }
@@ -52,8 +52,7 @@ public class SIR {
         if ((args[0].equals("-h") || args[0].equals("--help"))) {
             exibirMensagemAjuda();
             System.exit(0);
-        }else {
-
+        } else {
             String parametrosFile = obterValorArgumento(args, "-b", PARAMETROS);
             String condicoesIniciaisFile = obterValorArgumento(args, "-c", VALORES_INICIAIS);
             int metodo = Integer.parseInt(obterValorArgumento(args, "-m", "1"));
@@ -70,11 +69,10 @@ public class SIR {
 
             executarMetodo(metodo, S, I, R, h, numeroDeDias, valoresIniciais, parametros);
             escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro, h);
-            escreverPontosGnu(S, numeroDeDias, FICH_S_GNU);
-            escreverPontosGnu(I, numeroDeDias, FICH_I_GNU);
-            escreverPontosGnu(R, numeroDeDias, FICH_R_GNU);
+            escreverPontosGnu(S, numeroDeDias, FICH_S_GNU, h);
+            escreverPontosGnu(I, numeroDeDias, FICH_I_GNU, h);
+            escreverPontosGnu(R, numeroDeDias, FICH_R_GNU, h);
             executarGP(FICH_GP);
-
         }
     }
 
@@ -184,7 +182,7 @@ public class SIR {
         S[0] = valoresIniciais[0];
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
-        for (int dia = 1; dia < numeroDeDias; dia++) {
+        for (int dia = 1; dia < ((int) (numeroDeDias / h)); dia++) {
             double k1S = h * (fS(S[dia - 1], I[dia - 1], parametros));
             double k1I = h * (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros));
             double k1R = h * (fR(I[dia - 1], R[dia - 1], parametros));
@@ -230,11 +228,13 @@ public class SIR {
         return numero % 1 == 0;
     }
 
-    public static void escreverPontosGnu(double[] parametro, int numeroDeDias, String ficheiroGNU) throws FileNotFoundException {
+    public static void escreverPontosGnu(double[] parametro, int numeroDeDias, String ficheiroGNU, double h) throws FileNotFoundException {
         PrintWriter escrever = new PrintWriter(ficheiroGNU);
-        for (int dia = 0; dia < numeroDeDias; dia++) {
-            String valorFormatado = String.format("%d %.6f", dia, parametro[dia]).replace(',', '.');
+        double varAux = 0;
+        for (int dia = 0; dia < ((int) (numeroDeDias / h)); dia++) {
+            String valorFormatado = String.format("%.1f %.6f", varAux, parametro[dia]).replace(',', '.');
             escrever.println(valorFormatado);
+            varAux += h;
         }
         escrever.close();
     }
