@@ -4,6 +4,8 @@ import java.util.Scanner;
 public class SIR {
     static final String VALORES_INICIAIS = "estado_inicial.csv";
     static final String PARAMETROS = "params_exemplo1.csv";
+    static final int MIN_VALORES_ESPERADOS = 3;
+    static final int MIN_PARAMETROS_ESPERADOS = 7;
     static final int LIMITE_INF_PASSO = 0;
     static final int LIMITE_SUP_PASSO = 1;
     static final int NUM_DIA_MIN = 0;
@@ -26,10 +28,12 @@ public class SIR {
             executarPorComando(args);
         } else {
             double[] valoresIniciais = lerValoresIniciais(VALORES_INICIAIS);
-            String[] columnNamesEstado = getColumnNames(VALORES_INICIAIS);
             double[] parametros = lerParametros(PARAMETROS);
-            String[] columnNamesParametro = getColumnNames(PARAMETROS);
             verificarPlausibilidade(valoresIniciais, parametros);
+
+            String[] columnNamesEstado = getColumnNames(VALORES_INICIAIS);
+            String[] columnNamesParametro = getColumnNames(PARAMETROS);
+
 
             int numeroDeDias = pedirNumeroDias(PEDIR_DIAS) + 1;
             double h = pedirValorComUmPrint(LIMITE_INF_PASSO, LIMITE_SUP_PASSO, PEDIR_PASSO);
@@ -52,7 +56,10 @@ public class SIR {
         }
     }
 
+
     public static void verificarPlausibilidade(double[] valoresIniciais, double[] parametros) {
+        verificarNumeroElementos (valoresIniciais,MIN_VALORES_ESPERADOS, "valores iniciais");
+        verificarNumeroElementos (parametros, MIN_PARAMETROS_ESPERADOS, "parâmetros");
         if (saoValoresPlausiveis(valoresIniciais)) {
             System.out.println("ERRO: Valores iniciais não plausíveis.");
             System.exit(1);
@@ -60,6 +67,12 @@ public class SIR {
 
         if (saoValoresPlausiveis(parametros)) {
             System.out.println("ERRO: Parâmetros não plausíveis.");
+            System.exit(1);
+        }
+    }
+    public static void verificarNumeroElementos(double[] array, int numeroEsperado, String nome){
+        if (array.length < numeroEsperado) {
+            System.out.println("ERRO: O número de " + nome + " deve ser " + numeroEsperado + ".");
             System.exit(1);
         }
     }
