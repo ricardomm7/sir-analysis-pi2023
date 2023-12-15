@@ -25,7 +25,9 @@ public class SIR {
             executarPorComando(args);
         } else {
             double[] valoresIniciais = lerValoresIniciais(VALORES_INICIAIS);
+            String[] columnNamesEstado = getColumnNames(VALORES_INICIAIS);
             double[] parametros = lerParametros(PARAMETROS);
+            String[] columnNamesParametro = getColumnNames(PARAMETROS);
 
             int numeroDeDias = (int) pedirValorComUmPrint(NUM_DIA_MIN, NUM_DIA_MAX, PEDIR_DIAS) + 1;
             double h = pedirValorComUmPrint(LIMITE_INF_PASSO, LIMITE_SUP_PASSO, PEDIR_PASSO);
@@ -36,7 +38,7 @@ public class SIR {
             double[] R = new double[(int) (numeroDeDias / h)];
 
             int numExcMet = (int) pedirValorComUmPrint(LIMITE_INF_PASSO, NUM_METODOS, PEDIR_METODO);
-            executarMetodo(numExcMet, S, I, R, h, numeroDeDias, valoresIniciais, parametros);
+            executarMetodo(numExcMet, S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesEstado, columnNamesParametro);
 
             escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro, h);
 
@@ -60,13 +62,16 @@ public class SIR {
             String nomeFicheiro = obterValorArgumento(args, "-f", "resultados");
 
             double[] valoresIniciais = lerValoresIniciais(condicoesIniciaisFile);
+            String[] columnNamesEstado = getColumnNames(condicoesIniciaisFile);
             double[] parametros = lerParametros(parametrosFile);
+            String[] columnNamesParametro = getColumnNames(parametrosFile);
 
             double[] S = new double[(int) (numeroDeDias / h)];
             double[] I = new double[(int) (numeroDeDias / h)];
             double[] R = new double[(int) (numeroDeDias / h)];
 
-            executarMetodo(metodo, S, I, R, h, numeroDeDias, valoresIniciais, parametros);
+
+            executarMetodo(metodo, S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesEstado, columnNamesParametro);
             escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro, h);
             escreverPontosGnu(S, numeroDeDias, FICH_S_GNU, h);
             escreverPontosGnu(I, numeroDeDias, FICH_I_GNU, h);
@@ -98,11 +103,11 @@ public class SIR {
         System.out.println("  -h, --help     Exibir esta mensagem de ajuda");
     }
 
-    public static void executarMetodo(int num, double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros) {
+    public static void executarMetodo(int num, double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros, String[] columnNamesEstado, String[] columnNamesParametro) {
         if (num == 1) {
-            aplicarEuler(S, I, R, h, numeroDeDias, valoresIniciais, parametros);
+            aplicarEuler(S, I, R, h, numeroDeDias, valoresIniciais, parametros,columnNamesEstado, columnNamesParametro);
         } else if (num == 2) {
-            aplicarRK4(S, I, R, h, numeroDeDias, valoresIniciais, parametros);
+            aplicarRK4(S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesParametro);
         }
     }
 
@@ -127,76 +132,116 @@ public class SIR {
         return num;
     }
 
+    public static int findColumnByName(String[] columns, String label){
+        for (int i = 0; i < columns.length; i++) {
+            if(columns[i].equals(label)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+
+    public static String[] getColumnNames(String file) throws FileNotFoundException {
+        Scanner ler = new Scanner(new File(file));
+        return ler.next().split(";");
+    }
     public static double[] lerValoresIniciais(String file) throws FileNotFoundException {
         Scanner ler = new Scanner(new File(file));
+        String[] valores = ler.next().split(";");
+
         ler.nextLine();
-        String[] valores = ler.nextLine().split(";");
         double[] valoresIniciais = new double[valores.length];
-        for (int i = 0; i < valores.length; i++) {
-            valoresIniciais[i] = Double.parseDouble(valores[i].replace(',', '.'));
+        String[] splitStr = ler.next().split(";");
+
+        for (int i = 0; i < splitStr.length; i++) {
+            valoresIniciais[i] = Double.parseDouble(splitStr[i].replace(',', '.'));
         }
+
+
         ler.close();
         return valoresIniciais;
     }
 
     public static double[] lerParametros(String file) throws FileNotFoundException {
-        double[] parametros = new double[7];
         Scanner ler = new Scanner(new File(file));
+        String[] valores = ler.next().split(";");
+
         ler.nextLine();
-        String[] parametro = ler.nextLine().split(";");
-        for (int i = 1; i < parametro.length; i++) {
-            parametros[i - 1] = Double.parseDouble(parametro[i].replace(',', '.'));
+        double[] parametros = new double[valores.length];
+        String[] splitStr = ler.next().split(";");
+
+        for (int i = 0; i < splitStr.length; i++) {
+            parametros[i] = Double.parseDouble(splitStr[i].replace(',', '.'));
+
         }
+
         ler.close();
         return parametros;
     }
 
-    public static double fS(double S, double I, double[] parametros) {
-        return (parametros[1] - (parametros[4] * S * I) - (parametros[1] * S));
+    public static double fS(double S, double I, double[] parametros, String[] columnNamesParametro) {
+        int indexLambda = findColumnByName(columnNamesParametro,"lambda");
+        int index_b = findColumnByName(columnNamesParametro,"b");
+        return (parametros[indexLambda] - (parametros[index_b] * S * I) - (parametros[indexLambda] * S));
     }
 
-    public static double fI(double S, double I, double R, double[] parametros) {
-        return (parametros[4] * S * I - parametros[2] * I + parametros[3] * I * R - (parametros[1] + parametros[5]) * I);
+    public static double fI(double S, double I, double R, double[] parametros, String[] columnNamesParametro) {
+        int indexMU = findColumnByName(columnNamesParametro,"mu");
+        int indexKapa = findColumnByName(columnNamesParametro,"kapa");
+        int indexBeta = findColumnByName(columnNamesParametro,"beta");
+        int index_b = findColumnByName(columnNamesParametro,"b");
+        int indexDelta1 = findColumnByName(columnNamesParametro,"delta1");
+        return (parametros[index_b] * S * I - parametros[indexKapa] * I + parametros[indexBeta] * I * R - (parametros[indexMU] + parametros[indexDelta1]) * I);
     }
 
-    public static double fR(double I, double R, double[] parametros) {
-        return (parametros[2] * I - parametros[3] * I * R - (parametros[1] + parametros[6]) * R);
+    public static double fR(double I, double R, double[] parametros, String[] columnNamesParametro) {
+        int indexMU = findColumnByName(columnNamesParametro,"mu");
+        int indexKapa = findColumnByName(columnNamesParametro,"kapa");
+        int indexBeta = findColumnByName(columnNamesParametro,"beta");
+        int indexDelta2 = findColumnByName(columnNamesParametro,"delta2");
+
+        return (parametros[indexKapa] * I - parametros[indexBeta] * I * R - (parametros[indexMU] + parametros[indexDelta2]) * R);
     }
 
-    public static void aplicarEuler(double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros) {
-        S[0] = valoresIniciais[0];
-        I[0] = valoresIniciais[1];
-        R[0] = valoresIniciais[2];
+    public static void aplicarEuler(double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros, String[] columnNamesEstado, String[] columnNamesParametro) {
+        int indexS0 = findColumnByName(columnNamesEstado,"S0");
+        int indexI0 = findColumnByName(columnNamesEstado,"I0");
+        int indexR0 = findColumnByName(columnNamesEstado,"R0");
+
+        S[0] = valoresIniciais[indexS0];
+        I[0] = valoresIniciais[indexI0];
+        R[0] = valoresIniciais[indexR0];
         for (int dia = 1; dia < ((int) (numeroDeDias / h)); dia++) {
-            double dS = S[dia] + h * (fS(S[dia - 1], I[dia - 1], parametros));
-            double dI = I[dia] + h * (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros));
-            double dR = R[dia] + h * (fR(I[dia - 1], R[dia - 1], parametros));
+            double dS = S[dia] + h * (fS(S[dia - 1], I[dia - 1], parametros, columnNamesParametro));
+            double dI = I[dia] + h * (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros, columnNamesParametro));
+            double dR = R[dia] + h * (fR(I[dia - 1], R[dia - 1], parametros, columnNamesParametro));
             S[dia] = S[dia - 1] + dS;
             I[dia] = I[dia - 1] + dI;
             R[dia] = R[dia - 1] + dR;
         }
     }
 
-    public static void aplicarRK4(double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros) {
+    public static void aplicarRK4(double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros, String[] columnNamesParametro) {
         S[0] = valoresIniciais[0];
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
         for (int dia = 1; dia < ((int) (numeroDeDias / h)); dia++) {
-            double k1S = h * (fS(S[dia - 1], I[dia - 1], parametros));
-            double k1I = h * (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros));
-            double k1R = h * (fR(I[dia - 1], R[dia - 1], parametros));
+            double k1S = h * (fS(S[dia - 1], I[dia - 1], parametros,columnNamesParametro));
+            double k1I = h * (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros, columnNamesParametro));
+            double k1R = h * (fR(I[dia - 1], R[dia - 1], parametros, columnNamesParametro));
 
-            double k2S = h * (fS(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, parametros));
-            double k2I = h * (fI(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros));
-            double k2R = h * (fR(I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros));
+            double k2S = h * (fS(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, parametros, columnNamesParametro));
+            double k2I = h * (fI(S[dia - 1] + h * k1S, I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros, columnNamesParametro));
+            double k2R = h * (fR(I[dia - 1] + h * k1I, R[dia - 1] + h * k1R, parametros,columnNamesParametro));
 
-            double k3S = h * (fS(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, parametros));
-            double k3I = h * (fI(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, R[dia - 1] + h * k2R, parametros));
-            double k3R = h * (fR(I[dia - 1] + h * k2I, R[dia - 1] + h * k2R, parametros));
+            double k3S = h * (fS(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, parametros, columnNamesParametro));
+            double k3I = h * (fI(S[dia - 1] + h * k2S, I[dia - 1] + h * k2I, R[dia - 1] + h * k2R, parametros, columnNamesParametro));
+            double k3R = h * (fR(I[dia - 1] + h * k2I, R[dia - 1] + h * k2R, parametros, columnNamesParametro));
 
-            double k4S = h * (fS(S[dia - 1] + h * k3S, I[dia - 1] + h * k3I, parametros));
-            double k4I = h * (fI(S[dia - 1] + h * k3S, I[dia - 1] + h * k3I, R[dia - 1] + h * k3R, parametros));
-            double k4R = h * (fR(I[dia - 1] + h * k3I, R[dia - 1] + h * k3R, parametros));
+            double k4S = h * (fS(S[dia - 1] + h * k3S, I[dia - 1] + h * k3I, parametros, columnNamesParametro));
+            double k4I = h * (fI(S[dia - 1] + h * k3S, I[dia - 1] + h * k3I, R[dia - 1] + h * k3R, parametros, columnNamesParametro));
+            double k4R = h * (fR(I[dia - 1] + h * k3I, R[dia - 1] + h * k3R, parametros, columnNamesParametro));
 
             double kS = (k1S + 2 * k2S + 2 * k3S + k4S) / 6;
             double kI = (k1I + 2 * k2I + 2 * k3I + k4I) / 6;
