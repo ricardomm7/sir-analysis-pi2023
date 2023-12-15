@@ -223,7 +223,7 @@ public class SIR {
         escrever.close();
     }
 
-    private static boolean eInteiro(double numero) {
+    public static boolean eInteiro(double numero) {
         return numero % 1 == 0;
     }
 
