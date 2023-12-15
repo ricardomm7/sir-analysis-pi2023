@@ -6,7 +6,7 @@ public class SIR {
     static final String PARAMETROS = "params_exemplo1.csv";
     static final int LIMITE_INF_PASSO = 0;
     static final int LIMITE_SUP_PASSO = 1;
-    static final int NUM_DIA_MIN = 1;
+    static final int NUM_DIA_MIN = 0;
     static final int NUM_DIA_MAX = 1000000000;
     static final int NUM_METODOS = 2;
     static final String FORMAT = ".csv";
@@ -21,41 +21,59 @@ public class SIR {
     static Scanner ler = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException {
-        //executarPorComando(args);
+        if (args.length > 0) {
+            executarPorComando(args);
+        }else {
 
-        double[] valoresIniciais = lerValoresIniciais();
-        double[] parametros = lerParametros();
+            double[] valoresIniciais = lerValoresIniciais(VALORES_INICIAIS);
+            double[] parametros = lerParametros(PARAMETROS);
 
-        int numeroDeDias = (int) pedirValorComUmPrint(NUM_DIA_MIN, NUM_DIA_MAX, PEDIR_DIAS) + 1;
-        double h = pedirValorComUmPrint(LIMITE_INF_PASSO, LIMITE_SUP_PASSO, PEDIR_PASSO);
-        String nomeFicheiro = criarNomeParaFicheiro();
+            int numeroDeDias = (int) pedirValorComUmPrint(NUM_DIA_MIN, NUM_DIA_MAX, PEDIR_DIAS) + 1;
+            double h = pedirValorComUmPrint(LIMITE_INF_PASSO, LIMITE_SUP_PASSO, PEDIR_PASSO);
+            String nomeFicheiro = criarNomeParaFicheiro();
 
-        double[] S = new double[(int) (numeroDeDias / h)];
-        double[] I = new double[(int) (numeroDeDias / h)];
-        double[] R = new double[(int) (numeroDeDias / h)];
+            double[] S = new double[(int) (numeroDeDias / h)];
+            double[] I = new double[(int) (numeroDeDias / h)];
+            double[] R = new double[(int) (numeroDeDias / h)];
 
-        int numExcMet = (int) pedirValorComUmPrint(LIMITE_INF_PASSO, NUM_METODOS, PEDIR_METODO);
-        executarMetodo(numExcMet, S, I, R, h, numeroDeDias, valoresIniciais, parametros);
+            int numExcMet = (int) pedirValorComUmPrint(LIMITE_INF_PASSO, NUM_METODOS, PEDIR_METODO);
+            executarMetodo(numExcMet, S, I, R, h, numeroDeDias, valoresIniciais, parametros);
 
-        escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro, h);
+            escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro, h);
 
-        escreverPontosGnu(S, numeroDeDias, FICH_S_GNU);
-        escreverPontosGnu(I, numeroDeDias, FICH_I_GNU);
-        escreverPontosGnu(R, numeroDeDias, FICH_R_GNU);
-        executarGP(FICH_GP);
+            escreverPontosGnu(S, numeroDeDias, FICH_S_GNU);
+            escreverPontosGnu(I, numeroDeDias, FICH_I_GNU);
+            escreverPontosGnu(R, numeroDeDias, FICH_R_GNU);
+            executarGP(FICH_GP);
+        }
     }
 
-    public static void executarPorComando(String[] args) {
-        if ((args.length > 0 && args[0].equals("-h") || args[0].equals("--help"))) {
+    public static void executarPorComando(String[] args) throws FileNotFoundException {
+        if ((args[0].equals("-h") || args[0].equals("--help"))) {
             exibirMensagemAjuda();
             System.exit(0);
+        }else {
 
             String parametrosFile = obterValorArgumento(args, "-b", PARAMETROS);
             String condicoesIniciaisFile = obterValorArgumento(args, "-c", VALORES_INICIAIS);
             int metodo = Integer.parseInt(obterValorArgumento(args, "-m", "1"));
-            double passo = Double.parseDouble(obterValorArgumento(args, "-p", "0.1"));
-            int numeroDeDias1 = Integer.parseInt(obterValorArgumento(args, "-d", "5"));
-            String nomeFicheiro1 = obterValorArgumento(args, "-f", "resultados");
+            double h = Double.parseDouble(obterValorArgumento(args, "-p", "0.1"));
+            int numeroDeDias = Integer.parseInt(obterValorArgumento(args, "-d", "5"));
+            String nomeFicheiro = obterValorArgumento(args, "-f", "resultados");
+
+            double[] valoresIniciais = lerValoresIniciais(condicoesIniciaisFile);
+            double[] parametros = lerParametros(parametrosFile);
+
+            double[] S = new double[(int) (numeroDeDias / h)];
+            double[] I = new double[(int) (numeroDeDias / h)];
+            double[] R = new double[(int) (numeroDeDias / h)];
+
+            executarMetodo(metodo, S, I, R, h, numeroDeDias, valoresIniciais, parametros);
+            escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro, h);
+            escreverPontosGnu(S, numeroDeDias, FICH_S_GNU);
+            escreverPontosGnu(I, numeroDeDias, FICH_I_GNU);
+            escreverPontosGnu(R, numeroDeDias, FICH_R_GNU);
+            executarGP(FICH_GP);
 
         }
     }
@@ -104,16 +122,16 @@ public class SIR {
         System.out.print(inform);
         do {
             num = ler.nextDouble();
-            if (num < min || num > max) {
+            if (num <= min || num > max) {
                 System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: [" + min + "," + max + "]");
             }
-        } while (num < min || num > max);
+        } while (num <= min || num > max);
 
         return num;
     }
 
-    public static double[] lerValoresIniciais() throws FileNotFoundException {
-        Scanner ler = new Scanner(new File(VALORES_INICIAIS));
+    public static double[] lerValoresIniciais(String file) throws FileNotFoundException {
+        Scanner ler = new Scanner(new File(file));
         ler.nextLine();
         String[] valores = ler.nextLine().split(";");
         double[] valoresIniciais = new double[valores.length];
@@ -124,9 +142,9 @@ public class SIR {
         return valoresIniciais;
     }
 
-    public static double[] lerParametros() throws FileNotFoundException {
+    public static double[] lerParametros(String file) throws FileNotFoundException {
         double[] parametros = new double[7];
-        Scanner ler = new Scanner(new File(PARAMETROS));
+        Scanner ler = new Scanner(new File(file));
         ler.nextLine();
         String[] parametro = ler.nextLine().split(";");
         for (int i = 1; i < parametro.length; i++) {
