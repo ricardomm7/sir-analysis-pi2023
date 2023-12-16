@@ -5,6 +5,7 @@ import java.util.Scanner;
 public class SIR {
     static final String VALORES_INICIAIS = "estado_inicial.csv";
     static final String PARAMETROS = "params_exemplo1.csv";
+    static final int NUM_PARAM_COMAND = 12;
     static final int MIN_VALORES_ESPERADOS = 3;
     static final int MIN_PARAMETROS_ESPERADOS = 7;
     static final int LIMITE_INF_PASSO = 0;
@@ -149,7 +150,7 @@ public class SIR {
     }
 
     public static double[] colocarValoresIniciais() {
-        double estadoInicial[] = new double[3];
+        double[] estadoInicial = new double[3];
 
         System.out.println("Digite o valor de S[0] :");
         estadoInicial[0] = ler.nextDouble();
@@ -236,7 +237,7 @@ public class SIR {
         if ((args[0].equals("-h") || args[0].equals("--help"))) {
             exibirMensagemAjuda();
             System.exit(0);
-        } else if (args.length != 12) {
+        } else if (args.length != NUM_PARAM_COMAND) {
             System.out.println("Erro: Número inválido de argumentos. Cada opção deve ter um valor correspondente.");
             exibirMensagemAjuda();
             System.exit(1);
