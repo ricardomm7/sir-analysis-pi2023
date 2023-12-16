@@ -299,10 +299,10 @@ public class SIR {
         do {
             num = ler.nextDouble();
 
-            if (num <= min || num > max || !eInteiro(num)) {
+            if (num <= min || num > max /*|| !eInteiro(num)*/) {
                 System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: [" + min + "," + max + "] e divisivel por 1: ");
             }
-        } while (num <= min || num > max || !eInteiro(num));
+        } while (num <= min || num > max /*|| !eInteiro(num)*/);
 
         return num;
     }
