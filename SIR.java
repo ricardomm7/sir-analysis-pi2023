@@ -51,6 +51,109 @@ public class SIR {
             executarGP(FICH_GP);
         }
     }
+    public static void exibirMenuPrincipal() throws FileNotFoundException {
+        int escolha;
+
+        do {
+            System.out.println("\n=== Menu Principal ===");
+            System.out.println("1. Colocar valores dos Parâmetros");
+            System.out.println("2. Colocar valores iniciais");
+            System.out.println("3. Colocar argumentos (Passo e NumDias)");
+            System.out.println("4. Escolher método");
+            System.out.println("5. Realizar Calculos");
+            System.out.println("6. Escrever nome do ficheiro de saída");
+            System.out.println("0. Fechar o programa");
+            System.out.print("Digite a opção desejada: ");
+
+            escolha = ler.nextInt();
+
+            switch (escolha) {
+                case 1:
+                    double[] parametros = new double[6];
+                    parametros = colocarValoresParametros();
+                    break;
+                case 2:
+                    double[] valoresIniciais = new double[2];
+                    valoresIniciais = colocarValoresIniciais();
+                    break;
+                case 3:
+                    double[] argumentos = new double[1];
+                    argumentos = colocarArgumentos();
+
+                    break;
+                case 4:
+                    escolherMetodo();
+                    break;
+                case 5:
+                    String nomeFich = escreverNomeFicheiroSaida();
+
+                    break;
+                case 0:
+                    System.out.println("Programa encerrado.");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+            }
+
+        } while (escolha != 0);
+
+        ler.close();
+    }
+    public static double [] colocarValoresParametros() {
+        double parametros [] = new double[7];
+
+        System.out.println("Digite o valor de Lambda :");
+        parametros[0] = ler.nextDouble();
+        System.out.println("Digite o valor de Mu :");
+        parametros[1] = ler.nextDouble();
+        System.out.println("Digite o valor de Kapa :");
+        parametros[2] = ler.nextDouble();
+        System.out.println("Digite o valor de Beta :");
+        parametros[3] = ler.nextDouble();
+        System.out.println("Digite o valor de b :");
+        parametros[4] = ler.nextDouble();
+        System.out.println("Digite o valor de Delta1 :");
+        parametros[5] = ler.nextDouble();
+        System.out.println("Digite o valor de Delta2 :");
+        parametros[6] = ler.nextDouble();
+
+        return parametros;
+    }
+
+    public static double [] colocarValoresIniciais() {
+        double estadoInicial [] = new double[3];
+
+        System.out.println("Digite o valor de S[0] :");
+        estadoInicial[0] = ler.nextDouble();
+        System.out.println("Digite o valor de I[0] :");
+        estadoInicial[1] = ler.nextDouble();
+        System.out.println("Digite o valor de R[0] :");
+        estadoInicial[2] = ler.nextDouble();
+
+        return estadoInicial;
+
+    }
+
+    public static double[] colocarArgumentos() {
+        double[] argumentos = new double[2];
+        do {
+            argumentos[0] = pedirNumeroDias(PEDIR_DIAS);
+            argumentos[1] = pedirValorComUmPrint(LIMITE_INF_PASSO, LIMITE_SUP_PASSO, PEDIR_PASSO);
+        }while ((argumentos[0] != 0) || (argumentos[1] != 0));
+
+
+        return argumentos;
+
+    }
+    public static void escolherMetodo() {
+        //executarMetodo();
+    }
+
+    public static String escreverNomeFicheiroSaida() {
+        String nomeFicheiro = ler.nextLine();
+        return nomeFicheiro;
+    }
+
 
     public static void verificarPlausibilidade(double[] valoresIniciais, double[] parametros) {
         if (saoValoresPlausiveis(valoresIniciais)) {
@@ -95,13 +198,23 @@ public class SIR {
         if ((args[0].equals("-h") || args[0].equals("--help"))) {
             exibirMensagemAjuda();
             System.exit(0);
-        } else {
-            String parametrosFile = obterValorArgumento(args, "-b", PARAMETROS);
-            String condicoesIniciaisFile = obterValorArgumento(args, "-c", VALORES_INICIAIS);
-            int metodo = Integer.parseInt(obterValorArgumento(args, "-m", "1"));
-            double h = Double.parseDouble(obterValorArgumento(args, "-p", "0.1"));
-            int numeroDeDias = Integer.parseInt(obterValorArgumento(args, "-d", "5"));
-            String nomeFicheiro = obterValorArgumento(args, "-f", "resultados");
+        } else if (args.length % 2 != 0) {
+            System.out.println("Erro: Número inválido de argumentos. Cada opção deve ter um valor correspondente.");
+            exibirMensagemAjuda();
+            System.exit(1);
+        }else{
+
+            String parametrosFile = obterValorArgumento(args, "-b");
+            String condicoesIniciaisFile = obterValorArgumento(args, "-c");
+            int metodo = Integer.parseInt(obterValorArgumento(args, "-m"));
+            double h = Double.parseDouble(obterValorArgumento(args, "-p"));
+            int numeroDeDias = Integer.parseInt(obterValorArgumento(args, "-d"));
+            String nomeFicheiro = obterValorArgumento(args, "-f");
+
+
+            verificarComandoMetodo(metodo,LIMITE_INF_PASSO,NUM_METODOS);
+            verificarComandoDias(numeroDeDias, NUM_DIA_MIN);
+            verificarComandoPasso(h, LIMITE_INF_PASSO,LIMITE_SUP_PASSO);
 
             double[] valoresIniciais = lerValoresIniciais(condicoesIniciaisFile);
             String[] columnNamesEstado = getColumnNames(condicoesIniciaisFile);
@@ -121,28 +234,47 @@ public class SIR {
             executarGP(FICH_GP);
         }
     }
-
-
-    public static String obterValorArgumento(String[] args, String flag, String valorPadrao) {
+    public static void verificarComandoMetodo(int num, int min, int max ){
+        if (num < min || num > max) {
+            System.out.println("Erro: Valor inválido para o método. Deve ser 1 (Euler) ou 2 (Runge-Kutta).");
+            exibirMensagemAjuda();
+            System.exit(1);
+        }
+    }
+    public static void verificarComandoDias(int num, int min){
+        if (num < min ) {
+            System.out.println("Erro: Número inválido de dias. Deve ser maior que zero.");
+            exibirMensagemAjuda();
+            System.exit(1);
+        }
+    }
+    public static void verificarComandoPasso(double num, int min, int max ){
+        if (num < min || num > max) {
+            System.out.println("Erro: Valor inválido para o passo. Deve ser divisivel por 1 maior que zero e menor ou igual a um.");
+            exibirMensagemAjuda();
+            System.exit(1);
+        }
+    }
+    public static String obterValorArgumento(String[] args, String flag) {
         for (int i = 0; i < args.length - 1; i++) {
             if (args[i].equals(flag)) {
                 return args[i + 1];
             }
         }
-        return valorPadrao;
+        return null;
     }
 
     public static void exibirMensagemAjuda() {
-        System.out.println("SIR - Modelo Epidemiológico");
-        System.out.println("Sintaxe: java -jar SIR.jar [opções]");
-        System.out.println("Opções:");
+        System.out.println("\nSIR - Modelo Epidemiológico\n");
+
+        System.out.println("Opções:\n");
         System.out.println("  -b <arquivo>   Ficheiro de parâmetros (default: params_exemplo1.csv)");
         System.out.println("  -c <arquivo>   Ficheiro de condições iniciais (default: estado_inicial.csv)");
         System.out.println("  -m <metodo>    Método a usar (1-Euler ou 2-Runge Kutta de 4ª ordem) (default: 1)");
         System.out.println("  -p <passo>     Passo de integração h (maior que zero e menor ou igual a um) (default: 0.1)");
         System.out.println("  -d <dias>      Número de dias a considerar para análise (maior que zero) (default: 5)");
         System.out.println("  -f <arquivo>   Nome do ficheiro de saída CSV (default: resultados.csv)");
-        System.out.println("  -h, --help     Exibir esta mensagem de ajuda");
+        System.out.println("  -h, --help     Exibir esta mensagem de ajuda\n");
     }
 
     public static void executarMetodo(int num, double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros, String[] columnNamesEstado, String[] columnNamesParametro) {
@@ -166,10 +298,11 @@ public class SIR {
         System.out.print(inform);
         do {
             num = ler.nextDouble();
-            if (num <= min || num > max) {
-                System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: [" + min + "," + max + "]");
+
+            if (num <= min || num > max || !eInteiro(num)) {
+                System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: [" + min + "," + max + "] e divisivel por 1: ");
             }
-        } while (num <= min || num > max);
+        } while (num <= min || num > max || !eInteiro(num));
 
         return num;
     }
