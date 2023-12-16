@@ -236,7 +236,7 @@ public class SIR {
         if ((args[0].equals("-h") || args[0].equals("--help"))) {
             exibirMensagemAjuda();
             System.exit(0);
-        } else if (args.length % 2 != 0) {
+        } else if (args.length != 12) {
             System.out.println("Erro: Número inválido de argumentos. Cada opção deve ter um valor correspondente.");
             exibirMensagemAjuda();
             System.exit(1);
