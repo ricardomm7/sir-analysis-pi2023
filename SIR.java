@@ -4,6 +4,8 @@ import java.util.Scanner;
 public class SIR {
     static final String VALORES_INICIAIS = "estado_inicial.csv";
     static final String PARAMETROS = "params_exemplo1.csv";
+    static final int MIN_VALORES_ESPERADOS = 3;
+    static final int MIN_PARAMETROS_ESPERADOS = 7;
     static final int LIMITE_INF_PASSO = 0;
     static final int LIMITE_SUP_PASSO = 1;
     static final int NUM_DIA_MIN = 0;
@@ -14,9 +16,9 @@ public class SIR {
     static final String FICH_R_GNU = "dataR.dat";
     static final String FICH_GP = "file.gp";
     static final String NOME_FICHEIRO_PNG = "export_visual_graph.png";
-    static final String PEDIR_DIAS = "Digite o número de dias desejado :";
-    static final String PEDIR_PASSO = "Digite o número do passo (h) desejado :";
-    static final String PEDIR_METODO = "Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem :";
+    static final String PEDIR_DIAS = "Digite o número de dias desejado: ";
+    static final String PEDIR_PASSO = "Digite o número do passo (h) desejado: ";
+    static final String PEDIR_METODO = "Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem: ";
     static final double VALOR_MIN = 0.0;
     static final double VALOR_MAX = 1.0;
     static Scanner ler = new Scanner(System.in);
@@ -156,6 +158,8 @@ public class SIR {
 
 
     public static void verificarPlausibilidade(double[] valoresIniciais, double[] parametros) {
+        verificarNumeroElementos(valoresIniciais, MIN_VALORES_ESPERADOS, "valores iniciais");
+        verificarNumeroElementos(parametros, MIN_PARAMETROS_ESPERADOS, "parâmetros");
         if (saoValoresPlausiveis(valoresIniciais)) {
             System.out.println("ERRO: Valores iniciais não plausíveis.");
             System.exit(1);
@@ -163,6 +167,13 @@ public class SIR {
 
         if (saoValoresPlausiveis(parametros)) {
             System.out.println("ERRO: Parâmetros não plausíveis.");
+            System.exit(1);
+        }
+    }
+
+    public static void verificarNumeroElementos(double[] array, int numeroEsperado, String nome) {
+        if (array.length < numeroEsperado) {
+            System.out.println("ERRO: O número de " + nome + " deve ser " + numeroEsperado + ".");
             System.exit(1);
         }
     }
@@ -298,11 +309,10 @@ public class SIR {
         System.out.print(inform);
         do {
             num = ler.nextDouble();
-
-            if (num <= min || num > max /*|| !eInteiro(num)*/) {
-                System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: [" + min + "," + max + "] e divisivel por 1: ");
+            if (num <= min || num > max) {
+                System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: [" + min + "," + max + "]");
             }
-        } while (num <= min || num > max /*|| !eInteiro(num)*/);
+        } while (num <= min || num > max);
 
         return num;
     }
@@ -315,7 +325,6 @@ public class SIR {
         }
         return -1;
     }
-
 
     public static String[] getColumnNames(String file) throws FileNotFoundException {
         Scanner ler = new Scanner(new File(file));
@@ -333,7 +342,6 @@ public class SIR {
         for (int i = 0; i < splitStr.length; i++) {
             valoresIniciais[i] = Double.parseDouble(splitStr[i].replace(',', '.'));
         }
-
 
         ler.close();
         return valoresIniciais;
