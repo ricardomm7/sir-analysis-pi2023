@@ -116,7 +116,6 @@ public class SIR {
                     escreverPontosGnu(ICalculo, numeroDeDiasCalculo, FICH_I_GNU, hCalculo);
                     escreverPontosGnu(RCalculo, numeroDeDiasCalculo, FICH_R_GNU, hCalculo);
                     executarGP(FICH_GP);
-
                     break;
                 case 0:
                     System.out.println("Programa encerrado.");
@@ -160,9 +159,7 @@ public class SIR {
         estadoInicial[1] = ler.nextDouble();
         System.out.print("--Digite o valor de R[0]: ");
         estadoInicial[2] = ler.nextDouble();
-
         return estadoInicial;
-
     }
 
     public static double[] colocarArgumentos() {
@@ -170,7 +167,6 @@ public class SIR {
         argumentos[0] = pedirNumeroDias(PEDIR_DIAS);
         argumentos[1] = pedirValorComUmPrint(LIMITE_INF_PASSO, LIMITE_SUP_PASSO, PEDIR_PASSO);
         return argumentos;
-
     }
 
     public static int escolherMetodo() {
@@ -231,7 +227,6 @@ public class SIR {
                 System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um número maior que zero: ");
             }
         } while (numero <= NUM_DIA_MIN);
-
         return numero;
     }
 
@@ -244,7 +239,6 @@ public class SIR {
             exibirMensagemAjuda();
             System.exit(1);
         } else {
-
             String parametrosFile = obterValorArgumento(args, "-b");
             String condicoesIniciaisFile = obterValorArgumento(args, "-c");
             int metodo = Integer.parseInt(obterValorArgumento(args, "-m"));
@@ -347,7 +341,6 @@ public class SIR {
                 System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: [" + min + "," + max + "]");
             }
         } while (num <= min || num > max);
-
         return num;
     }
 
@@ -376,7 +369,6 @@ public class SIR {
         for (int i = 0; i < splitStr.length; i++) {
             valoresIniciais[i] = Double.parseDouble(splitStr[i].replace(',', '.'));
         }
-
         ler.close();
         return valoresIniciais;
     }
@@ -393,7 +385,6 @@ public class SIR {
             parametros[i] = Double.parseDouble(splitStr[i].replace(',', '.'));
 
         }
-
         ler.close();
         return parametros;
     }
