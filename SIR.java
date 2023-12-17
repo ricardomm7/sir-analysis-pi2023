@@ -3,8 +3,8 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class SIR {
-    static final String VALORES_INICIAIS = "estado_inicial.csv";
-    static final String PARAMETROS = "params_exemplo1.csv";
+    //static final String VALORES_INICIAIS = "estado_inicial.csv";
+    //static final String PARAMETROS = "params_exemplo1.csv";
     static final int NUM_PARAM_COMAND = 12;
     static final int MIN_VALORES_ESPERADOS = 3;
     static final int MIN_PARAMETROS_ESPERADOS = 7;
@@ -20,7 +20,7 @@ public class SIR {
     static final String NOME_FICHEIRO_PNG = "export_visual_graph.png";
     static final String PEDIR_DIAS = "Digite o número de dias desejado: ";
     static final String PEDIR_PASSO = "Digite o número do passo (h) desejado: ";
-    static final String PEDIR_METODO = "Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem: ";
+    //static final String PEDIR_METODO = "Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem: ";
     static final double VALOR_MIN = 0.0;
     static final double VALOR_MAX = 1.0;
     static Scanner ler = new Scanner(System.in);
@@ -62,15 +62,17 @@ public class SIR {
         int escolha;
 
         do {
-            System.out.println("\n=== Menu Principal ===");
-            System.out.println("1. Colocar valores dos Parâmetros");
-            System.out.println("2. Colocar valores iniciais");
-            System.out.println("3. Colocar argumentos (Passo e NumDias)");
-            System.out.println("4. Escolher método");
-            System.out.println("5. Realizar Calculos");
-            System.out.println("6. Escrever nome do ficheiro de saída");
-            System.out.println("0. Fechar o programa");
-            System.out.print("Digite a opção desejada: ");
+            System.out.println();
+            System.out.println("=== Menu Principal ===");
+            System.out.println("|| 1. Colocar valores dos parâmetros");
+            System.out.println("|| 2. Colocar valores iniciais");
+            System.out.println("|| 3. Colocar argumentos (Passo e NumDias)");
+            System.out.println("|| 4. Escolher método");
+            System.out.println("|| 5. Realizar calculos");
+            System.out.println("|| 6. Escrever nome do ficheiro de saída");
+            System.out.println("|| 0. Fechar o programa");
+            System.out.println();
+            System.out.println("Digite a opção desejada: ");
 
             escolha = ler.nextInt();
 
@@ -131,19 +133,19 @@ public class SIR {
     public static double[] colocarValoresParametros() {
         double[] parametros = new double[7];
 
-        System.out.println("Digite o valor de Lambda :");
+        System.out.print("--Digite o valor de Lambda: ");
         parametros[0] = ler.nextDouble();
-        System.out.println("Digite o valor de Mu :");
+        System.out.print("--Digite o valor de Mu: ");
         parametros[1] = ler.nextDouble();
-        System.out.println("Digite o valor de Kapa :");
+        System.out.print("--Digite o valor de Kapa: ");
         parametros[2] = ler.nextDouble();
-        System.out.println("Digite o valor de Beta :");
+        System.out.print("--Digite o valor de Beta: ");
         parametros[3] = ler.nextDouble();
-        System.out.println("Digite o valor de b :");
+        System.out.print("--Digite o valor de b: ");
         parametros[4] = ler.nextDouble();
-        System.out.println("Digite o valor de Delta1 :");
+        System.out.print("--Digite o valor de Delta1: ");
         parametros[5] = ler.nextDouble();
-        System.out.println("Digite o valor de Delta2 :");
+        System.out.print("--Digite o valor de Delta2: ");
         parametros[6] = ler.nextDouble();
 
         return parametros;
@@ -152,11 +154,11 @@ public class SIR {
     public static double[] colocarValoresIniciais() {
         double[] estadoInicial = new double[3];
 
-        System.out.println("Digite o valor de S[0] :");
+        System.out.print("--Digite o valor de S[0]: ");
         estadoInicial[0] = ler.nextDouble();
-        System.out.println("Digite o valor de I[0] :");
+        System.out.print("--Digite o valor de I[0]: ");
         estadoInicial[1] = ler.nextDouble();
-        System.out.println("Digite o valor de R[0] :");
+        System.out.print("--Digite o valor de R[0]: ");
         estadoInicial[2] = ler.nextDouble();
 
         return estadoInicial;
@@ -172,7 +174,7 @@ public class SIR {
     }
 
     public static int escolherMetodo() {
-        System.out.println("Digite (1) para o método de Euler ou (2) para o método de Runge-Kutta:");
+        System.out.print("Digite (1) para o método de Euler ou (2) para o método de Runge-Kutta: ");
         int numMetodo = ler.nextInt();
         verificarComandoMetodo(numMetodo, LIMITE_INF_PASSO, NUM_METODOS);
         return numMetodo;
