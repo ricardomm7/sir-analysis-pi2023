@@ -287,7 +287,7 @@ public class SIR {
     }
 
     public static void verificarComandoPasso(double num, int min, int max) {
-        if (num < min || num >= max || !verificarSomasSucessivasPasso(num)) {
+        if (num < min || num >= max || verificarSomasSucessivasPasso(num)) {
             System.out.println("Erro: Valor inválido para o passo. Deve ser divisivel por 1 maior que zero e menor ou igual a um.");
             exibirMensagemAjuda();
             System.exit(1);
@@ -337,11 +337,11 @@ public class SIR {
         System.out.print(inform);
         do {
             num = ler.nextDouble();
-            if (num <= min || num > max || !verificarSomasSucessivasPasso(num)) {
+            if (num <= min || num > max || verificarSomasSucessivasPasso(num)) {
                 System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: [" + min + "," + max + "]: ");
                 System.out.println();
             }
-        } while (num <= min || num > max || !verificarSomasSucessivasPasso(num));
+        } while (num <= min || num > max || verificarSomasSucessivasPasso(num));
         return num;
     }
 
@@ -352,7 +352,7 @@ public class SIR {
             if (passo * i == 1) bool = true;
             i++;
         }
-        return bool;
+        return !bool;
     }
 
     public static int findColumnByName(String[] columns, String label) {
