@@ -337,23 +337,22 @@ public class SIR {
         System.out.print(inform);
         do {
             num = ler.nextDouble();
-            if (num <= min || num > max || verificarSomasSucessivasPasso(num)) {
+            if (num <= min || num > max || !verificarSomasSucessivasPasso(num)) {
                 System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: [" + min + "," + max + "]: ");
                 System.out.println();
             }
-        } while (num <= min || num > max || verificarSomasSucessivasPasso(num));
+        } while (num <= min || num > max || !verificarSomasSucessivasPasso(num));
         return num;
     }
 
     public static boolean verificarSomasSucessivasPasso(double passo) {
-        double soma = 0;
-        while (soma < 1) {
-            if (soma == 0 && passo == 1) {
-                return true; // Tratar o caso especial de divisores de 1
-            }
-            soma = soma + passo;
+        boolean bool = false;
+        int i = 0;
+        while (passo * i <= 1 && !bool) {
+            if (passo * i == 1) bool = true;
+            i++;
         }
-        return ((int) soma == 1);
+        return bool;
     }
 
     public static int findColumnByName(String[] columns, String label) {
