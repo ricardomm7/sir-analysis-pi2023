@@ -1,5 +1,5 @@
 import java.io.*;
-import java.util.Arrays;
+
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -61,14 +61,15 @@ public class SIR {
 
     public static void exibirMenuPrincipal() throws FileNotFoundException {
         int escolha, metodo = 0;
-        double[] parametros = new double[0], valoresInicias = new double[0], argumentos = new double[0];
-        String nomeFich = null;
+        double[] valoresParametros = new double[0], valoresInicias = new double[0], argumentos = new double[0];
+        String[] columnNamesEstado = null, columnNamesParametros = null;
+        String out = null;
 
         do {
             System.out.println();
             System.out.println("=== Menu Principal ===");
-            System.out.println("|| 1. Colocar nome ficheiro dos parâmetros");
-            System.out.println("|| 2. Colocar nome ficheiro dos valores iniciais");
+            System.out.println("|| 1. Colocar nome ficheiro dos Valores Iniciais");
+            System.out.println("|| 2. Colocar nome ficheiro dos Parametros");
             System.out.println("|| 3. Colocar argumentos (Passo e NumDias)");
             System.out.println("|| 4. Escolher método");
             System.out.println("|| 5. Escrever nome do ficheiro de saída");
@@ -78,17 +79,20 @@ public class SIR {
             System.out.println("Digite a opção desejada: ");
 
             escolha = ler.nextInt();
+            ler.nextLine(); // limpar buffer
 
             switch (escolha) {
                 case 1:
-                    String indiParametros = "parametros";
-                    String nomeFichPar = escreverNomeFicheiro(indiParametros);
-                    parametros = colocarValoresParametros(nomeFichPar);
+                    System.out.print("Digite o nome do ficheiro que contém os valores Iniciais : ");
+                    String ficheiroValorIni = ler.nextLine() + FORMAT;
+                    valoresInicias = lerValoresIniciais(ficheiroValorIni);
+                    columnNamesEstado = getColumnNames(ficheiroValorIni);
                     break;
                 case 2:
-                    String indiValIni = "valores iniciais";
-                    String nomeFichValIni = escreverNomeFicheiro(indiValIni);
-                    valoresInicias = colocarValoresIniciais(nomeFichValIni);
+                    System.out.print("Digite o nome do ficheiro que contém os valores dos Parametros : ");
+                    String ficheiroParamentros = ler.nextLine() + FORMAT;
+                    valoresParametros = lerParametros(ficheiroParamentros);
+                    columnNamesParametros = getColumnNames(ficheiroParamentros);
                     break;
                 case 3:
                     argumentos = colocarArgumentos();
@@ -97,25 +101,24 @@ public class SIR {
                     metodo = escolherMetodo();
                     break;
                 case 5:
-                    String saida = "saída";
-                    nomeFich = escreverNomeFicheiro(saida);
+                    System.out.print("Digite o nome desejado para o ficheiro que contém os resultados : ");
+
+                    out = ler.nextLine();
                     break;
                 case 6:
                     double hCalculo = argumentos[1];
-                    int numeroDeDiasCalculo = (int) argumentos[0] + 1;
+                    int numeroDeDiasCalculo = (int) argumentos[0];
+                    verificarPlausibilidade(valoresInicias, valoresParametros);
 
                     double[] SCalculo = new double[(int) (numeroDeDiasCalculo / hCalculo)];
                     double[] ICalculo = new double[(int) (numeroDeDiasCalculo / hCalculo)];
                     double[] RCalculo = new double[(int) (numeroDeDiasCalculo / hCalculo)];
 
-                    String columnNamesEstado = Arrays.toString(new String[]{"S0,I0,R0"});
-                    String columnNamesParametro = Arrays.toString(new String[]{"lambda,mu,kapa,beta,b,delta1,delta2"});
-
                     executarMetodo(metodo, SCalculo, ICalculo, RCalculo, hCalculo,
-                            numeroDeDiasCalculo, valoresInicias, parametros,
-                            new String[]{columnNamesEstado}, new String[]{columnNamesParametro});
+                            numeroDeDiasCalculo, valoresInicias, valoresParametros,
+                            columnNamesEstado, columnNamesParametros);
 
-                    escreverResultadosEmFicheiro(SCalculo, ICalculo, RCalculo, numeroDeDiasCalculo, nomeFich, hCalculo);
+                    escreverResultadosEmFicheiro(SCalculo, ICalculo, RCalculo, numeroDeDiasCalculo, out, hCalculo);
                     escreverPontosGnu(SCalculo, numeroDeDiasCalculo, FICH_S_GNU, hCalculo);
                     escreverPontosGnu(ICalculo, numeroDeDiasCalculo, FICH_I_GNU, hCalculo);
                     escreverPontosGnu(RCalculo, numeroDeDiasCalculo, FICH_R_GNU, hCalculo);
@@ -133,39 +136,6 @@ public class SIR {
         ler.close();
     }
 
-    public static double[] colocarValoresParametros(String file) throws FileNotFoundException {
-        Scanner ler = new Scanner(new File(file));
-        String[] valores = ler.next().split(";");
-
-        ler.nextLine();
-        double[] parametros = new double[valores.length];
-        String[] splitStr = ler.next().split(";");
-
-        for (int i = 0; i < splitStr.length; i++) {
-            parametros[i] = Double.parseDouble(splitStr[i].replace(',', '.'));
-
-        }
-
-        ler.close();
-        return parametros;
-    }
-
-    public static double[] colocarValoresIniciais(String file) throws FileNotFoundException {
-        Scanner ler = new Scanner(new File(file));
-        String[] valores = ler.next().split(";");
-
-        ler.nextLine();
-        double[] valoresIniciais = new double[valores.length];
-        String[] splitStr = ler.next().split(";");
-
-        for (int i = 0; i < splitStr.length; i++) {
-            valoresIniciais[i] = Double.parseDouble(splitStr[i].replace(',', '.'));
-        }
-
-        ler.close();
-        return valoresIniciais;
-    }
-
     public static double[] colocarArgumentos() {
         double[] argumentos = new double[2];
         argumentos[0] = pedirNumeroDias(PEDIR_DIAS);
@@ -178,12 +148,6 @@ public class SIR {
         int numMetodo = ler.nextInt();
         verificarComandoMetodo(numMetodo, LIMITE_INF_PASSO, NUM_METODOS);
         return numMetodo;
-    }
-
-    public static String escreverNomeFicheiro(String tipoDeFich) {
-        System.out.print("Digite o nome do ficheiro de " + tipoDeFich + ": ");
-        ler.nextLine(); // Limpa o buffer
-        return ler.nextLine();
     }
 
 
@@ -230,7 +194,7 @@ public class SIR {
                 System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um número maior que zero: ");
             }
         } while (numero <= NUM_DIA_MIN);
-        return numero;
+        return numero + 1;
     }
 
     public static void executarPorComando(String[] args) throws FileNotFoundException {
@@ -405,8 +369,10 @@ public class SIR {
 
     public static double fS(double S, double I, double[] parametros, String[] columnNamesParametro) {
         int indexLambda = findColumnByName(columnNamesParametro, "lambda");
+        int indexMU = findColumnByName(columnNamesParametro, "mu");
         int index_b = findColumnByName(columnNamesParametro, "b");
-        return (parametros[indexLambda] - (parametros[index_b] * S * I) - (parametros[indexLambda] * S));
+
+        return (parametros[indexLambda] - (parametros[index_b] * S * I) - (parametros[indexMU] * S));
     }
 
     public static double fI(double S, double I, double R, double[] parametros, String[] columnNamesParametro) {
@@ -415,6 +381,7 @@ public class SIR {
         int indexBeta = findColumnByName(columnNamesParametro, "beta");
         int index_b = findColumnByName(columnNamesParametro, "b");
         int indexDelta1 = findColumnByName(columnNamesParametro, "delta1");
+
         return (parametros[index_b] * S * I - parametros[indexKapa] * I + parametros[indexBeta] * I * R - (parametros[indexMU] + parametros[indexDelta1]) * I);
     }
 
