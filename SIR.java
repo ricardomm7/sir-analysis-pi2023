@@ -18,7 +18,7 @@ public class SIR {
     static final String NOME_FICHEIRO_PNG = "export_visual_graph.png";
     static final String PEDIR_DIAS = "Digite o número de dias desejado: ";
     static final String PEDIR_PASSO = "Digite o número do passo (h) desejado: ";
-    //static final String PEDIR_METODO = "Digite (1) caso queira aplicar o método de Euler ou digite (2) caso queira aplicar o método de Runge-Kutta de quarta ordem: ";
+
     static final double VALOR_MIN = 0.0;
     static final double VALOR_MAX = 1.0;
     static Scanner ler = new Scanner(System.in);
