@@ -121,7 +121,21 @@ public class SIR {
         verificarComandoMetodo(numMetodo, LIMITE_INF_PASSO, NUM_METODOS);
         return numMetodo;
     }
-
+    public static int pedirNumeroDias(String mensagem) {
+        int numero;
+        System.out.print(mensagem);
+        do {
+            while (!ler.hasNextInt()) {
+                System.out.print("ERRO: Por favor, insira um número inteiro válido: ");
+                ler.next();
+            }
+            numero = ler.nextInt();
+            if (numero <= NUM_DIA_MIN) {
+                System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um número maior que zero: ");
+            }
+        } while (numero <= NUM_DIA_MIN);
+        return numero;
+    }
 
     public static void verificarPlausibilidade(double[] valoresIniciais, double[] parametros) {
         verificarNumeroElementos(valoresIniciais, MIN_VALORES_ESPERADOS, "valores iniciais");
@@ -151,22 +165,6 @@ public class SIR {
             }
         }
         return false;
-    }
-
-    public static int pedirNumeroDias(String mensagem) {
-        int numero;
-        System.out.print(mensagem);
-        do {
-            while (!ler.hasNextInt()) {
-                System.out.print("ERRO: Por favor, insira um número inteiro válido: ");
-                ler.next();
-            }
-            numero = ler.nextInt();
-            if (numero <= NUM_DIA_MIN) {
-                System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um número maior que zero: ");
-            }
-        } while (numero <= NUM_DIA_MIN);
-        return numero;
     }
 
     public static void executarPorComando(String[] args) throws FileNotFoundException {
@@ -232,6 +230,13 @@ public class SIR {
             System.exit(1);
         }
     }
+    public static void executarMetodo(int num, double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros, String[] columnNamesEstado, String[] columnNamesParametro) {
+        if (num == 1) {
+            aplicarEuler(S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesEstado, columnNamesParametro);
+        } else if (num == 2) {
+            aplicarRK4(S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesParametro);
+        }
+    }
 
     public static String obterValorArgumento(String[] args, String flag) {
         for (int i = 0; i < args.length - 1; i++) {
@@ -255,13 +260,7 @@ public class SIR {
         System.out.println("  -h, --help     Exibir esta mensagem de ajuda\n");
     }
 
-    public static void executarMetodo(int num, double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros, String[] columnNamesEstado, String[] columnNamesParametro) {
-        if (num == 1) {
-            aplicarEuler(S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesEstado, columnNamesParametro);
-        } else if (num == 2) {
-            aplicarRK4(S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesParametro);
-        }
-    }
+
 
     public static double pedirValorComUmPrint(int min, int max, String inform) {
         double num;
@@ -269,7 +268,7 @@ public class SIR {
         do {
             num = ler.nextDouble();
             if (num <= min || num > max || verificarSomasSucessivasPasso(num)) {
-                System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: [" + min + "," + max + "]: ");
+                System.out.print("Erro: Valor inválido. Introduza um valor divisivel por 1 entre: [" + min + "," + max + "]: ");
                 System.out.println();
             }
         } while (num <= min || num > max || verificarSomasSucessivasPasso(num));
