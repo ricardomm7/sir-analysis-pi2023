@@ -60,7 +60,9 @@ public class SIR {
     }
 
     public static void exibirMenuPrincipal() throws FileNotFoundException {
-        int escolha;
+        int escolha, metodo = 0;
+        double[] parametros = new double[0], valoresInicias = new double[0], argumentos = new double[0];
+        String nomeFich = null;
 
         do {
             System.out.println();
@@ -69,8 +71,8 @@ public class SIR {
             System.out.println("|| 2. Colocar valores iniciais");
             System.out.println("|| 3. Colocar argumentos (Passo e NumDias)");
             System.out.println("|| 4. Escolher método");
-            System.out.println("|| 5. Realizar calculos");
-            System.out.println("|| 6. Escrever nome do ficheiro de saída");
+            System.out.println("|| 5. Escrever nome do ficheiro de saída");
+            System.out.println("|| 6. Realizar calculos");
             System.out.println("|| 0. Fechar o programa");
             System.out.println();
             System.out.println("Digite a opção desejada: ");
@@ -78,28 +80,27 @@ public class SIR {
             escolha = ler.nextInt();
 
             switch (escolha) {
+                
                 case 1:
-                    colocarValoresParametros();
+                    parametros = colocarValoresParametros();
                     break;
                 case 2:
-                    colocarValoresIniciais();
+                     valoresInicias = colocarValoresIniciais();
                     break;
                 case 3:
-                    colocarArgumentos();
+                    argumentos = colocarArgumentos();
                     break;
                 case 4:
-                    escolherMetodo();
+                    metodo = escolherMetodo();
                     break;
                 case 5:
-                    String nomeFich = escreverNomeFicheiroSaida();
-
-                    int numMetodoCalculo = escolherMetodo();
-                    double[] valoresIniciaisCalculo = colocarValoresIniciais();
-                    double[] parametrosCalculo = colocarValoresParametros();
-                    double[] argumentosCalculo = colocarArgumentos();
-
-                    double hCalculo = argumentosCalculo[1];
-                    int numeroDeDiasCalculo = (int) argumentosCalculo[0] + 1;
+                    nomeFich = escreverNomeFicheiroSaida();
+                    break;
+                case 6:
+                    
+                    
+                    double hCalculo = argumentos[1];
+                    int numeroDeDiasCalculo = (int) argumentos[0] + 1;
 
                     double[] SCalculo = new double[(int) (numeroDeDiasCalculo / hCalculo)];
                     double[] ICalculo = new double[(int) (numeroDeDiasCalculo / hCalculo)];
@@ -108,8 +109,8 @@ public class SIR {
                     String columnNamesEstado = Arrays.toString(new String[]{"S0,I0,R0"});
                     String columnNamesParametro = Arrays.toString(new String[]{"lambda,mu,kapa,beta,b,delta1,delta2"});
 
-                    executarMetodo(numMetodoCalculo, SCalculo, ICalculo, RCalculo, hCalculo,
-                            numeroDeDiasCalculo, valoresIniciaisCalculo, parametrosCalculo,
+                    executarMetodo(metodo, SCalculo, ICalculo, RCalculo, hCalculo,
+                            numeroDeDiasCalculo, valoresInicias, parametros,
                             new String[]{columnNamesEstado}, new String[]{columnNamesParametro});
 
                     escreverResultadosEmFicheiro(SCalculo, ICalculo, RCalculo, numeroDeDiasCalculo, nomeFich, hCalculo);
