@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class SIR {
@@ -190,7 +191,6 @@ public class SIR {
             System.out.println("ERRO: Valores iniciais não plausíveis.");
             System.exit(1);
         }
-
         if (saoValoresPlausiveis(parametros)) {
             System.out.println("ERRO: Parâmetros não plausíveis.");
             System.exit(1);
@@ -241,9 +241,9 @@ public class SIR {
         } else {
             String parametrosFile = obterValorArgumento(args, "-b");
             String condicoesIniciaisFile = obterValorArgumento(args, "-c");
-            int metodo = Integer.parseInt(obterValorArgumento(args, "-m"));
-            double h = Double.parseDouble(obterValorArgumento(args, "-p"));
-            int numeroDeDias = Integer.parseInt(obterValorArgumento(args, "-d"));
+            int metodo = Integer.parseInt(Objects.requireNonNull(obterValorArgumento(args, "-m")));
+            double h = Double.parseDouble(Objects.requireNonNull(obterValorArgumento(args, "-p")));
+            int numeroDeDias = Integer.parseInt(Objects.requireNonNull(obterValorArgumento(args, "-d")));
             String nomeFicheiro = obterValorArgumento(args, "-f");
 
 
@@ -287,7 +287,7 @@ public class SIR {
     }
 
     public static void verificarComandoPasso(double num, int min, int max) {
-        if (num < min || num > max) {
+        if (num < min || num >= max || (1 % num != 0)) {
             System.out.println("Erro: Valor inválido para o passo. Deve ser divisivel por 1 maior que zero e menor ou igual a um.");
             exibirMensagemAjuda();
             System.exit(1);
@@ -324,23 +324,24 @@ public class SIR {
         }
     }
 
-    public static String criarNomeParaFicheiro() {
+    /*public static String criarNomeParaFicheiro() {
         System.out.print("Coloque o nome para o ficheiro dos resultados [ex:results] :");
         String nome;
         ler.nextLine();
         nome = ler.nextLine();
         return nome;
-    }
+    }*/
 
     public static double pedirValorComUmPrint(int min, int max, String inform) {
         double num;
         System.out.print(inform);
         do {
             num = ler.nextDouble();
-            if (num <= min || num > max) {
-                System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: [" + min + "," + max + "]");
+            if (num <= min || num > max || (1 % num != 0)) {
+                System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um valor entre: [" + min + "," + max + "]:");
+                System.out.println();
             }
-        } while (num <= min || num > max);
+        } while (num <= min || num > max || (1 % num != 0));
         return num;
     }
 
