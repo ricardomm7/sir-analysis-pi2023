@@ -67,12 +67,12 @@ public class SIR {
         do {
             System.out.println();
             System.out.println("=== Menu Principal ===");
-            System.out.println("|| 1. Colocar valores dos parâmetros");
-            System.out.println("|| 2. Colocar valores iniciais");
+            System.out.println("|| 1. Colocar nome ficheiro dos parâmetros");
+            System.out.println("|| 2. Colocar nome ficheiro dos valores iniciais");
             System.out.println("|| 3. Colocar argumentos (Passo e NumDias)");
             System.out.println("|| 4. Escolher método");
             System.out.println("|| 5. Escrever nome do ficheiro de saída");
-            System.out.println("|| 6. Realizar calculos");
+            System.out.println("|| 6. Realizar cálculos");
             System.out.println("|| 0. Fechar o programa");
             System.out.println();
             System.out.println("Digite a opção desejada: ");
@@ -80,12 +80,15 @@ public class SIR {
             escolha = ler.nextInt();
 
             switch (escolha) {
-                
                 case 1:
-                    parametros = colocarValoresParametros();
+                    String indiParametros = "parametros";
+                    String nomeFichPar = escreverNomeFicheiro(indiParametros);
+                    parametros = colocarValoresParametros(nomeFichPar);
                     break;
                 case 2:
-                     valoresInicias = colocarValoresIniciais();
+                    String indiValIni = "valores iniciais";
+                    String nomeFichValIni = escreverNomeFicheiro(indiValIni);
+                    valoresInicias = colocarValoresIniciais(nomeFichValIni);
                     break;
                 case 3:
                     argumentos = colocarArgumentos();
@@ -94,11 +97,10 @@ public class SIR {
                     metodo = escolherMetodo();
                     break;
                 case 5:
-                    nomeFich = escreverNomeFicheiroSaida();
+                    String saida = "saída";
+                    nomeFich = escreverNomeFicheiro(saida);
                     break;
                 case 6:
-                    
-                    
                     double hCalculo = argumentos[1];
                     int numeroDeDiasCalculo = (int) argumentos[0] + 1;
 
@@ -131,37 +133,37 @@ public class SIR {
         ler.close();
     }
 
-    public static double[] colocarValoresParametros() {
-        double[] parametros = new double[7];
+    public static double[] colocarValoresParametros(String file) throws FileNotFoundException {
+        Scanner ler = new Scanner(new File(file));
+        String[] valores = ler.next().split(";");
 
-        System.out.print("--Digite o valor de Lambda: ");
-        parametros[0] = ler.nextDouble();
-        System.out.print("--Digite o valor de Mu: ");
-        parametros[1] = ler.nextDouble();
-        System.out.print("--Digite o valor de Kapa: ");
-        parametros[2] = ler.nextDouble();
-        System.out.print("--Digite o valor de Beta: ");
-        parametros[3] = ler.nextDouble();
-        System.out.print("--Digite o valor de b: ");
-        parametros[4] = ler.nextDouble();
-        System.out.print("--Digite o valor de Delta1: ");
-        parametros[5] = ler.nextDouble();
-        System.out.print("--Digite o valor de Delta2: ");
-        parametros[6] = ler.nextDouble();
+        ler.nextLine();
+        double[] parametros = new double[valores.length];
+        String[] splitStr = ler.next().split(";");
 
+        for (int i = 0; i < splitStr.length; i++) {
+            parametros[i] = Double.parseDouble(splitStr[i].replace(',', '.'));
+
+        }
+
+        ler.close();
         return parametros;
     }
 
-    public static double[] colocarValoresIniciais() {
-        double[] estadoInicial = new double[3];
+    public static double[] colocarValoresIniciais(String file) throws FileNotFoundException {
+        Scanner ler = new Scanner(new File(file));
+        String[] valores = ler.next().split(";");
 
-        System.out.print("--Digite o valor de S[0]: ");
-        estadoInicial[0] = ler.nextDouble();
-        System.out.print("--Digite o valor de I[0]: ");
-        estadoInicial[1] = ler.nextDouble();
-        System.out.print("--Digite o valor de R[0]: ");
-        estadoInicial[2] = ler.nextDouble();
-        return estadoInicial;
+        ler.nextLine();
+        double[] valoresIniciais = new double[valores.length];
+        String[] splitStr = ler.next().split(";");
+
+        for (int i = 0; i < splitStr.length; i++) {
+            valoresIniciais[i] = Double.parseDouble(splitStr[i].replace(',', '.'));
+        }
+
+        ler.close();
+        return valoresIniciais;
     }
 
     public static double[] colocarArgumentos() {
@@ -178,8 +180,8 @@ public class SIR {
         return numMetodo;
     }
 
-    public static String escreverNomeFicheiroSaida() {
-        System.out.print("Digite o nome do ficheiro de saída: ");
+    public static String escreverNomeFicheiro(String tipoDeFich) {
+        System.out.print("Digite o nome do ficheiro de " + tipoDeFich + ": ");
         ler.nextLine(); // Limpa o buffer
         return ler.nextLine();
     }
