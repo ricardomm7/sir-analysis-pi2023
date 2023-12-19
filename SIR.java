@@ -1,11 +1,8 @@
 import java.io.*;
-
 import java.util.Objects;
 import java.util.Scanner;
 
 public class SIR {
-    //static final String VALORES_INICIAIS = "estado_inicial.csv";
-    //static final String PARAMETROS = "params_exemplo1.csv";
     static final int NUM_PARAM_COMAND = 12;
     static final int MIN_VALORES_ESPERADOS = 3;
     static final int MIN_PARAMETROS_ESPERADOS = 7;
@@ -31,31 +28,6 @@ public class SIR {
             executarPorComando(args);
         } else {
             exibirMenuPrincipal();
-            /*
-            double[] valoresIniciais = lerValoresIniciais(VALORES_INICIAIS);
-            String[] columnNamesEstado = getColumnNames(VALORES_INICIAIS);
-            double[] parametros = lerParametros(PARAMETROS);
-            String[] columnNamesParametro = getColumnNames(PARAMETROS);
-            verificarPlausibilidade(valoresIniciais, parametros);
-
-            int numeroDeDias = pedirNumeroDias(PEDIR_DIAS) + 1;
-            double h = pedirValorComUmPrint(LIMITE_INF_PASSO, LIMITE_SUP_PASSO, PEDIR_PASSO);
-
-            String nomeFicheiro = criarNomeParaFicheiro();
-
-            double[] S = new double[(int) (numeroDeDias / h)];
-            double[] I = new double[(int) (numeroDeDias / h)];
-            double[] R = new double[(int) (numeroDeDias / h)];
-
-            int numExcMet = (int) pedirValorComUmPrint(LIMITE_INF_PASSO, NUM_METODOS, PEDIR_METODO);
-            executarMetodo(numExcMet, S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesEstado, columnNamesParametro);
-
-            escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro, h);
-
-            escreverPontosGnu(S, numeroDeDias, FICH_S_GNU, h);
-            escreverPontosGnu(I, numeroDeDias, FICH_I_GNU, h);
-            escreverPontosGnu(R, numeroDeDias, FICH_R_GNU, h);
-            executarGP(FICH_GP);*/
         }
     }
 
@@ -110,9 +82,9 @@ public class SIR {
                     int numeroDeDiasCalculo = (int) argumentos[0];
                     verificarPlausibilidade(valoresInicias, valoresParametros);
 
-                    double[] SCalculo = new double[(int) (numeroDeDiasCalculo / hCalculo)];
-                    double[] ICalculo = new double[(int) (numeroDeDiasCalculo / hCalculo)];
-                    double[] RCalculo = new double[(int) (numeroDeDiasCalculo / hCalculo)];
+                    double[] SCalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
+                    double[] ICalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
+                    double[] RCalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
 
                     executarMetodo(metodo, SCalculo, ICalculo, RCalculo, hCalculo,
                             numeroDeDiasCalculo, valoresInicias, valoresParametros,
@@ -194,7 +166,7 @@ public class SIR {
                 System.out.print("ERRO: O valor introduzido é inválido.\nIntroduza um número maior que zero: ");
             }
         } while (numero <= NUM_DIA_MIN);
-        return numero + 1;
+        return numero;
     }
 
     public static void executarPorComando(String[] args) throws FileNotFoundException {
@@ -290,14 +262,6 @@ public class SIR {
             aplicarRK4(S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesParametro);
         }
     }
-
-    /*public static String criarNomeParaFicheiro() {
-        System.out.print("Coloque o nome para o ficheiro dos resultados [ex:results] :");
-        String nome;
-        ler.nextLine();
-        nome = ler.nextLine();
-        return nome;
-    }*/
 
     public static double pedirValorComUmPrint(int min, int max, String inform) {
         double num;
@@ -402,7 +366,7 @@ public class SIR {
         S[0] = valoresIniciais[indexS0];
         I[0] = valoresIniciais[indexI0];
         R[0] = valoresIniciais[indexR0];
-        for (int dia = 1; dia < ((int) (numeroDeDias / h)); dia++) {
+        for (int dia = 1; dia < ((int) (numeroDeDias / h)) + 1; dia++) {
             double dS = S[dia] + h * (fS(S[dia - 1], I[dia - 1], parametros, columnNamesParametro));
             double dI = I[dia] + h * (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros, columnNamesParametro));
             double dR = R[dia] + h * (fR(I[dia - 1], R[dia - 1], parametros, columnNamesParametro));
@@ -416,7 +380,7 @@ public class SIR {
         S[0] = valoresIniciais[0];
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
-        for (int dia = 1; dia < ((int) (numeroDeDias / h)); dia++) {
+        for (int dia = 1; dia < ((int) (numeroDeDias / h)) + 1; dia++) {
             double k1S = h * (fS(S[dia - 1], I[dia - 1], parametros, columnNamesParametro));
             double k1I = h * (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros, columnNamesParametro));
             double k1R = h * (fR(I[dia - 1], R[dia - 1], parametros, columnNamesParametro));
@@ -447,7 +411,7 @@ public class SIR {
         PrintWriter escrever = new PrintWriter(nomeDoFicheiro + FORMAT);
         escrever.print("Dia;S;I;R;T\n");
         double varAux = 0;
-        for (int dia = 0; dia < ((int) (numeroDeDias / h)); dia++) {
+        for (int dia = 0; dia < ((int) (numeroDeDias / h)) + 1; dia++) {
             if (eInteiro(varAux)) {
                 int diaUnitario = (int) varAux;
                 double total = S[dia] + I[dia] + R[dia];
@@ -465,7 +429,7 @@ public class SIR {
     public static void escreverPontosGnu(double[] parametro, int numeroDeDias, String ficheiroGNU, double h) throws FileNotFoundException {
         PrintWriter escrever = new PrintWriter(ficheiroGNU);
         double varAux = 0;
-        for (int dia = 0; dia < ((int) (numeroDeDias / h)); dia++) {
+        for (int dia = 0; dia < ((int) (numeroDeDias / h)) + 1; dia++) {
             String valorFormatado = String.format("%.1f %.6f", varAux, parametro[dia]).replace(',', '.');
             escrever.println(valorFormatado);
             varAux += h;
