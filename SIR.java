@@ -188,22 +188,75 @@ public class SIR {
             verificarComandoDias(numeroDeDias, NUM_DIA_MIN);
             verificarComandoPasso(h, LIMITE_INF_PASSO, LIMITE_SUP_PASSO);
 
-            double[] valoresIniciais = lerValoresIniciais(condicoesIniciaisFile);
             String[] columnNamesEstado = getColumnNames(condicoesIniciaisFile);
-            double[] parametros = lerParametros(parametrosFile);
             String[] columnNamesParametro = getColumnNames(parametrosFile);
 
-            double[] S = new double[(int) (numeroDeDias / h)];
-            double[] I = new double[(int) (numeroDeDias / h)];
-            double[] R = new double[(int) (numeroDeDias / h)];
+            double[] valoresIniciais = lerValoresIniciais(condicoesIniciaisFile);
+            double[] parametros = lerParametros(parametrosFile);
+
+            double[][] valoresIniciaisArray = lerCasosEstudo(condicoesIniciaisFile);
+            double[][] parametrosArray = lerCasosEstudo(parametrosFile);
+
+            for (int i = 0; i < valoresIniciaisArray.length; i++) {
+                valoresIniciais = valoresIniciaisArray[i];
+                parametros = parametrosArray[i];
+                double[] valoresInicias = lerValoresIniciais(condicoesIniciaisFile);
+                double[] valoresParametros = lerParametros(parametrosFile);
+
+                double[] argumentos = new double[0];
+                double hCalculo = argumentos[1];
+                int numeroDeDiasCalculo = (int) argumentos[0];
+                verificarPlausibilidade(valoresInicias, valoresParametros);
+
+                double[] SCalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
+                double[] ICalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
+                double[] RCalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
+
+                executarMetodo(metodo, SCalculo, ICalculo, RCalculo, hCalculo,
+                        numeroDeDiasCalculo, valoresIniciais, parametros,
+                        columnNamesEstado, columnNamesParametro);
+                escreverResultadosEmFicheiro(SCalculo, ICalculo, RCalculo, numeroDeDiasCalculo, nomeFicheiro, hCalculo, i + 1);
 
 
-            executarMetodo(metodo, S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesEstado, columnNamesParametro);
-            escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro, h);
-            escreverPontosGnu(S, numeroDeDias, FICH_S_GNU, h);
-            escreverPontosGnu(I, numeroDeDias, FICH_I_GNU, h);
-            escreverPontosGnu(R, numeroDeDias, FICH_R_GNU, h);
-            executarGP(FICH_GP);
+            }
+
+
+            /*System.out.print("Digite o nome do ficheiro que contém os valores Iniciais : ");
+                    String ficheiroValorIni = ler.nextLine() + FORMAT;
+                    System.out.print("Digite o nome do ficheiro que contém os valores dos Parametros : ");
+                    String ficheiroParametros = ler.nextLine() + FORMAT;
+
+                    columnNamesEstado = getColumnNames(ficheiroValorIni);
+                    columnNamesParametros = getColumnNames(ficheiroParametros);
+
+                    double[][] valoresIniciaisArray = lerCasosEstudo(ficheiroValorIni);
+                    double[][] parametrosArray = lerCasosEstudo(ficheiroParametros);
+
+
+
+                    for (int i = 0; i < valoresIniciaisArray.length; i++) {
+                        valoresIniciais = valoresIniciaisArray[i];
+                        parametros = parametrosArray[i];
+
+
+                        valoresInicias = lerValoresIniciais(ficheiroValorIni);
+                        valoresParametros = lerParametros(ficheiroParametros);
+
+                        hCalculo = argumentos[1];
+                        numeroDeDiasCalculo = (int) argumentos[0];
+                        verificarPlausibilidade(valoresInicias, valoresParametros);
+
+                        SCalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
+                        ICalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
+                        RCalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
+
+                        executarMetodo(metodo, SCalculo, ICalculo, RCalculo, hCalculo,
+                                numeroDeDiasCalculo, valoresIniciais, parametros,
+                                columnNamesEstado, columnNamesParametros);
+                        escreverResultadosEmFicheiro(SCalculo, ICalculo, RCalculo, numeroDeDiasCalculo, out, hCalculo, i + 1);
+
+                    }
+          break;*/
         }
     }
 
