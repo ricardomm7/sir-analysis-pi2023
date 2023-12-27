@@ -412,7 +412,7 @@ public class SIR {
         double varAux = 0;
         for (int dia = 0; dia < ((int) (numeroDeDias / h)) + 1; dia++) {
             if (eInteiro(varAux)) {
-                int diaUnitario = (int) varAux;
+                int diaUnitario = (int) truncarParaUmaCasaDecimal(varAux);
                 double total = S[dia] + I[dia] + R[dia];
                 escrever.printf("%d;%.6f;%.6f;%.6f;%.6f%n", diaUnitario, S[dia], I[dia], R[dia], total);
             }
@@ -421,8 +421,26 @@ public class SIR {
         escrever.close();
     }
 
+    public static double truncarParaUmaCasaDecimal(double numero) {
+        double parteInteira = Math.floor(numero);
+        double parteDecimal = numero - parteInteira;
+
+        if (parteDecimal >= 0.9) {
+            parteInteira += 1.0;
+        }
+
+        return parteInteira;
+    }
+
     public static boolean eInteiro(double numero) {
-        return numero % 1 == 0;
+        double parteDecimal = numero % 1;
+
+        // Arredonda apenas se a parte decimal for maior ou igual a 0.9
+        if (parteDecimal >= 0.9) {
+            return true;
+        }
+
+        return parteDecimal == 0; // Verifica se não há parte decimal
     }
 
     public static void escreverPontosGnu(double[] parametro, int numeroDeDias, String ficheiroGNU, double h) throws FileNotFoundException {
