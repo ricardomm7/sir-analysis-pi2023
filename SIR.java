@@ -11,9 +11,6 @@ public class SIR {
     static final int NUM_DIA_MIN = 0;
     static final int NUM_METODOS = 2;
     static final String FORMAT = ".csv";
-    static final String FICH_S_GNU = "dataS.dat";
-    static final String FICH_I_GNU = "dataI.dat";
-    static final String FICH_R_GNU = "dataR.dat";
     static final String FICH_GP = "file.gp";
     static final String NOME_FICHEIRO_PNG = "export_visual_graph.png";
     static final String PEDIR_DIAS = "Digite o número de dias desejado: ";
@@ -35,7 +32,8 @@ public class SIR {
         double[] valoresParametros = new double[0], valoresInicias = new double[0], argumentos = new double[0];
         String[] columnNamesEstado = null, columnNamesParametros = null;
         String out = null;
-
+        int quantCasos = 1;
+        String ficheiroParamentros = null;
         do {
             System.out.println();
             System.out.println("=== Menu Principal ===");
@@ -61,9 +59,10 @@ public class SIR {
                     break;
                 case 2:
                     System.out.print("Digite o nome do ficheiro que contém os valores dos Parametros : ");
-                    String ficheiroParamentros = ler.nextLine() + FORMAT;
-                    valoresParametros = lerParametros(ficheiroParamentros);
+                    ficheiroParamentros = ler.nextLine() + FORMAT;
+                    valoresParametros = lerParametros(ficheiroParamentros, 1);
                     columnNamesParametros = getColumnNames(ficheiroParamentros);
+                    quantCasos = obterQuantCasos(columnNamesParametros, ficheiroParamentros);
                     break;
                 case 3:
                     argumentos = colocarArgumentos();
@@ -73,26 +72,33 @@ public class SIR {
                     break;
                 case 5:
                     System.out.print("Digite o nome desejado para o ficheiro que contém os resultados : ");
-
                     out = ler.nextLine();
                     break;
                 case 6:
-                    double hCalculo = argumentos[1];
-                    int numeroDeDiasCalculo = (int) argumentos[0];
-                    verificarPlausibilidade(valoresInicias, valoresParametros);
+                    for (int i = 1; i <= quantCasos; i++) {
+                        double hCalculo = argumentos[1];
+                        int numeroDeDiasCalculo = (int) argumentos[0];
+                        verificarPlausibilidade(valoresInicias, valoresParametros);
 
-                    double[] SCalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
-                    double[] ICalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
-                    double[] RCalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
+                        double[] SCalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
+                        double[] ICalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
+                        double[] RCalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
 
-                    executarMetodo(metodo, SCalculo, ICalculo, RCalculo, hCalculo,
-                            numeroDeDiasCalculo, valoresInicias, valoresParametros,
-                            columnNamesEstado, columnNamesParametros);
+                        executarMetodo(metodo, SCalculo, ICalculo, RCalculo, hCalculo,
+                                numeroDeDiasCalculo, valoresInicias, valoresParametros,
+                                columnNamesEstado, columnNamesParametros);
 
-                    escreverResultadosEmFicheiro(SCalculo, ICalculo, RCalculo, numeroDeDiasCalculo, out, hCalculo);
-                    escreverPontosGnu(SCalculo, numeroDeDiasCalculo, FICH_S_GNU, hCalculo);
-                    escreverPontosGnu(ICalculo, numeroDeDiasCalculo, FICH_I_GNU, hCalculo);
-                    escreverPontosGnu(RCalculo, numeroDeDiasCalculo, FICH_R_GNU, hCalculo);
+                        escreverResultadosEmFicheiro(SCalculo, ICalculo, RCalculo, argumentos[0], out + "CASO" + i, argumentos[1]);
+
+                        escreverPontosGnu(SCalculo, numeroDeDiasCalculo, "dataS" + i + ".dat", hCalculo);
+                        escreverPontosGnu(ICalculo, numeroDeDiasCalculo, "dataI" + i + ".dat", hCalculo);
+                        escreverPontosGnu(RCalculo, numeroDeDiasCalculo, "dataR" + i + ".dat", hCalculo);
+
+                        if (i < quantCasos) {
+                            valoresParametros = lerParametros(ficheiroParamentros, i);
+                        }
+                    }
+                    escreverScript(quantCasos);
                     executarGP(FICH_GP);
                     break;
                 case 0:
@@ -105,6 +111,30 @@ public class SIR {
         } while (escolha != 0);
 
         ler.close();
+    }
+
+    public static int obterQuantCasos(String[] columnNamesParametros, String file) throws FileNotFoundException {
+        int indexCaso = findColumnByName(columnNamesParametros, "caso");
+        int contador = 0;
+
+        Scanner ler = new Scanner(new File(file));
+
+        // Ignorar a primeira linha
+        if (ler.hasNextLine()) {
+            ler.nextLine(); // Descartar a primeira linha
+        }
+
+        while (ler.hasNextLine()) {
+            String linha = ler.nextLine();
+            String[] colunas = linha.split(";"); // Supondo que o separador seja ponto e vírgula, ajuste conforme seu arquivo
+
+            // Verificar se a coluna caso existe e incrementar o contador
+            if (colunas.length > indexCaso) {
+                contador++;
+            }
+        }
+
+        return contador;
     }
 
     public static double[] colocarArgumentos() {
@@ -191,7 +221,7 @@ public class SIR {
 
             double[] valoresIniciais = lerValoresIniciais(condicoesIniciaisFile);
             String[] columnNamesEstado = getColumnNames(condicoesIniciaisFile);
-            double[] parametros = lerParametros(parametrosFile);
+            double[] parametros = lerParametros(parametrosFile, 1); //precisa-se de alterar para ler os varios casos
             String[] columnNamesParametro = getColumnNames(parametrosFile);
 
             double[] S = new double[(int) (numeroDeDias / h) + 1];
@@ -201,9 +231,14 @@ public class SIR {
 
             executarMetodo(metodo, S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesEstado, columnNamesParametro);
             escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro, h);
-            escreverPontosGnu(S, numeroDeDias, FICH_S_GNU, h);
-            escreverPontosGnu(I, numeroDeDias, FICH_I_GNU, h);
-            escreverPontosGnu(R, numeroDeDias, FICH_R_GNU, h);
+            int quantCasos = obterQuantCasos(columnNamesParametro, parametrosFile);
+
+            for (int i = 1; i <= quantCasos; i++) {
+                escreverPontosGnu(S, numeroDeDias, "dataS" + i + ".dat", h);
+                escreverPontosGnu(I, numeroDeDias, "dataI" + i + ".dat", h);
+                escreverPontosGnu(R, numeroDeDias, "dataR" + i + ".dat", h);
+            }
+            escreverScript(quantCasos);
             executarGP(FICH_GP);
         }
     }
@@ -314,17 +349,17 @@ public class SIR {
         return valoresIniciais;
     }
 
-    public static double[] lerParametros(String file) throws FileNotFoundException {
+    public static double[] lerParametros(String file, int casoN) throws FileNotFoundException {
         Scanner ler = new Scanner(new File(file));
         String[] valores = ler.next().split(";");
-
-        ler.nextLine();
+        for (int i = 1; i < casoN; i++) {
+            ler.nextLine();
+        }
         double[] parametros = new double[valores.length];
         String[] splitStr = ler.next().split(";");
 
         for (int i = 0; i < splitStr.length; i++) {
             parametros[i] = Double.parseDouble(splitStr[i].replace(',', '.'));
-
         }
         ler.close();
         return parametros;
@@ -406,7 +441,7 @@ public class SIR {
         }
     }
 
-    public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R, int numeroDeDias, String nomeDoFicheiro, double h) throws FileNotFoundException {
+    public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R, double numeroDeDias, String nomeDoFicheiro, double h) throws FileNotFoundException {
         PrintWriter escrever = new PrintWriter(nomeDoFicheiro + FORMAT);
         escrever.print("Dia;S;I;R;T\n");
         double varAux = 0;
@@ -451,6 +486,40 @@ public class SIR {
             escrever.println(valorFormatado);
             varAux += h;
         }
+        escrever.close();
+    }
+
+    public static void escreverScript(int casos) throws FileNotFoundException {
+        PrintWriter escrever = new PrintWriter("file.gp");
+
+        // Calcular layout
+        int layY = 2;  // Número de linhas fixo
+        int layX = (casos + layY - 1) / layY;  // Número de colunas
+
+        String scr = "set terminal pngcairo size 1000,750 enhanced font 'Verdana,12'\n" +
+                "set output 'multiplot_graficos.png'\n" +
+                "\n" +
+                "set multiplot layout " + layY + "," + layX + "\n" +
+                "\n";
+        escrever.println(scr);
+
+        for (int i = 1; i <= casos; i++) {
+            // Definir posição do gráfico no layout
+            int row = (i - 1) / layX + 1;  // Calcular linha
+            int col = (i - 1) % layX + 1;  // Calcular coluna
+
+            String aEscrever = "set title 'Caso " + i + "'\n" +
+                    "set xlabel 'Dias'\n" +
+                    "set ylabel 'Taxas'\n" +
+                    "set origin " + (col - 1) / (double) layX + "," + (layY - row) / (double) layY + "\n" +
+                    "set size 1.0/" + layX + "," + 1.0 / layY + "\n" +
+                    "plot 'dataS" + i + ".dat' with linespoints linewidth 3 title 'Suscetibilidade',\\\n" +
+                    "'dataI" + i + ".dat' with linespoints linewidth 3 title 'Infetados',\\\n" +
+                    "'dataR" + i + ".dat' with linespoints linewidth 3 title 'Recuperados'\n";
+
+            escrever.println(aEscrever);
+        }
+
         escrever.close();
     }
 
