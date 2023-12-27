@@ -245,12 +245,12 @@ public class SIR {
         System.out.println("\nSIR - Modelo Epidemiológico\n");
 
         System.out.println("Opções:\n");
-        System.out.println("  -b <arquivo>   Ficheiro de parâmetros");
-        System.out.println("  -c <arquivo>   Ficheiro de condições iniciais ");
-        System.out.println("  -m <metodo>    Método a usar (1-Euler ou 2-Runge Kutta de 4ª ordem) ");
-        System.out.println("  -p <passo>     Passo de integração h (maior que zero e menor ou igual a um) ");
-        System.out.println("  -d <dias>      Número de dias a considerar para análise (maior que 0 e divisivel por 1)");
-        System.out.println("  <arquivo>   Nome do ficheiro de saída CSV");
+        System.out.println("  -b <arquivo>   Ficheiro de parâmetros (default: params_exemplo1.csv)");
+        System.out.println("  -c <arquivo>   Ficheiro de condições iniciais (default: estado_inicial.csv)");
+        System.out.println("  -m <metodo>    Método a usar (1-Euler ou 2-Runge Kutta de 4ª ordem) (default: 1)");
+        System.out.println("  -p <passo>     Passo de integração h (maior que zero e menor ou igual a um) (default: 0.1)");
+        System.out.println("  -d <dias>      Número de dias a considerar para análise (maior que zero) (default: 5)");
+        System.out.println("  -f <arquivo>   Nome do ficheiro de saída CSV (default: resultados.csv)");
         System.out.println("  -h, --help     Exibir esta mensagem de ajuda\n");
     }
 
@@ -258,7 +258,7 @@ public class SIR {
         if (num == 1) {
             aplicarEuler(S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesEstado, columnNamesParametro);
         } else if (num == 2) {
-            aplicarRK4(S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesParametro, columnNamesEstado);
+            aplicarRK4(S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesParametro);
         }
     }
 
@@ -375,15 +375,10 @@ public class SIR {
         }
     }
 
-    public static void aplicarRK4(double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros, String[] columnNamesParametro, String[] columnNamesEstado) {
-        int indexS0 = findColumnByName(columnNamesEstado, "S0");
-        int indexI0 = findColumnByName(columnNamesEstado, "I0");
-        int indexR0 = findColumnByName(columnNamesEstado, "R0");
-
-        S[0] = valoresIniciais[indexS0];
-        I[0] = valoresIniciais[indexI0];
-        R[0] = valoresIniciais[indexR0];
-
+    public static void aplicarRK4(double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros, String[] columnNamesParametro) {
+        S[0] = valoresIniciais[0];
+        I[0] = valoresIniciais[1];
+        R[0] = valoresIniciais[2];
         for (int dia = 1; dia < ((int) (numeroDeDias / h)) + 1; dia++) {
             double k1S = h * (fS(S[dia - 1], I[dia - 1], parametros, columnNamesParametro));
             double k1I = h * (fI(S[dia - 1], I[dia - 1], R[dia - 1], parametros, columnNamesParametro));
@@ -417,7 +412,7 @@ public class SIR {
         double varAux = 0;
         for (int dia = 0; dia < ((int) (numeroDeDias / h)) + 1; dia++) {
             if (eInteiro(varAux)) {
-                int diaUnitario = (int) varAux;
+                int diaUnitario = (int) truncarParaUmaCasaDecimal(varAux);
                 double total = S[dia] + I[dia] + R[dia];
                 escrever.printf("%d;%.6f;%.6f;%.6f;%.6f%n", diaUnitario, S[dia], I[dia], R[dia], total);
             }
@@ -426,8 +421,26 @@ public class SIR {
         escrever.close();
     }
 
+    public static double truncarParaUmaCasaDecimal(double numero) {
+        double parteInteira = Math.floor(numero);
+        double parteDecimal = numero - parteInteira;
+
+        if (parteDecimal >= 0.9) {
+            parteInteira += 1.0;
+        }
+
+        return parteInteira;
+    }
+
     public static boolean eInteiro(double numero) {
-        return numero % 1 == 0;
+        double parteDecimal = numero % 1;
+
+        // Arredonda apenas se a parte decimal for maior ou igual a 0.9
+        if (parteDecimal >= 0.9) {
+            return true;
+        }
+
+        return parteDecimal == 0; // Verifica se não há parte decimal
     }
 
     public static void escreverPontosGnu(double[] parametro, int numeroDeDias, String ficheiroGNU, double h) throws FileNotFoundException {
