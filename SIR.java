@@ -245,12 +245,12 @@ public class SIR {
         System.out.println("\nSIR - Modelo Epidemiológico\n");
 
         System.out.println("Opções:\n");
-        System.out.println("  -b <arquivo>   Ficheiro de parâmetros (default: params_exemplo1.csv)");
-        System.out.println("  -c <arquivo>   Ficheiro de condições iniciais (default: estado_inicial.csv)");
-        System.out.println("  -m <metodo>    Método a usar (1-Euler ou 2-Runge Kutta de 4ª ordem) (default: 1)");
-        System.out.println("  -p <passo>     Passo de integração h (maior que zero e menor ou igual a um) (default: 0.1)");
-        System.out.println("  -d <dias>      Número de dias a considerar para análise (maior que zero) (default: 5)");
-        System.out.println("  -f <arquivo>   Nome do ficheiro de saída CSV (default: resultados.csv)");
+        System.out.println("  -b <arquivo>   Ficheiro de parâmetros");
+        System.out.println("  -c <arquivo>   Ficheiro de condições iniciais");
+        System.out.println("  -m <metodo>    Método a usar (1-Euler ou 2-Runge Kutta de 4ª ordem)");
+        System.out.println("  -p <passo>     Passo de integração h (maior que zero e menor ou igual a um)");
+        System.out.println("  -d <dias>      Número de dias a considerar para análise (maior que zero e divisivel por 1) ");
+        System.out.println("     <arquivo>   Nome do ficheiro de saída CSV ");
         System.out.println("  -h, --help     Exibir esta mensagem de ajuda\n");
     }
 
