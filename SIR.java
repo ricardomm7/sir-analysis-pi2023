@@ -38,7 +38,7 @@ public class SIR {
             System.out.println("=== Menu Principal ===");
             System.out.println("|| 1. Colocar nome ficheiro dos Valores Iniciais");
             System.out.println("|| 2. Colocar nome ficheiro dos Parametros");
-            System.out.println("|| 3. Colocar argumentos (Passo e NumDias)");
+            System.out.println("|| 3. Colocar argumentos (Passo e Numero de Dias)");
             System.out.println("|| 4. Escolher método");
             System.out.println("|| 5. Escrever nome do ficheiro de saída");
             System.out.println("|| 6. Realizar cálculos");
@@ -69,7 +69,7 @@ public class SIR {
                     metodo = escolherMetodo();
                     break;
                 case 5:
-                    System.out.print("Digite o nome desejado para o ficheiro que contém os resultados : ");
+                    System.out.print("Digite o prefixo desejado para o ficheiro CSV que contém os resultados : ");
                     out = ler.nextLine();
                     break;
                 case 6:
@@ -90,7 +90,7 @@ public class SIR {
                                 columnNamesEstado, columnNamesParametros);
 
                         escreverResultadosEmFicheiro(SCalculo, ICalculo, RCalculo, argumentos[0],
-                                out, argumentos[1],i);
+                                out, argumentos[1], i);
 
                         escreverPontosGnu(SCalculo, numeroDeDiasCalculo, "dataS" + i + ".dat", hCalculo);
                         escreverPontosGnu(ICalculo, numeroDeDiasCalculo, "dataI" + i + ".dat", hCalculo);
@@ -133,7 +133,6 @@ public class SIR {
                 contador++;
             }
         }
-
         return contador;
     }
 
@@ -477,7 +476,7 @@ public class SIR {
 
     public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R, double numeroDeDias,
                                                     String nomeDoFicheiro, double h, int caso) throws FileNotFoundException {
-        PrintWriter escrever = new PrintWriter(nomeDoFicheiro + "_Caso_" + caso + FORMAT );
+        PrintWriter escrever = new PrintWriter(nomeDoFicheiro + "_Caso_" + caso + FORMAT);
         escrever.print("Dia;S;I;R;T\n");
         double varAux = 0;
         for (int dia = 0; dia < ((int) (numeroDeDias / h)) + 1; dia++) {
