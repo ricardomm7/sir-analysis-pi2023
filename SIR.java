@@ -28,12 +28,11 @@ public class SIR {
     }
 
     public static void exibirMenuPrincipal() throws FileNotFoundException {
-        int escolha, metodo = 0;
-        double[] valoresParametros = new double[0], valoresInicias = new double[0], argumentos = new double[0];
+        int escolha, metodo = 0, quantCasos = 0;
+        double[] valoresParametros, valoresInicias, argumentos = new double[0];
         String[] columnNamesEstado = null, columnNamesParametros = null;
-        String out = null;
-        int quantCasos = 1;
-        String ficheiroParamentros = null;
+        String out = null, ficheiroParamentros = null, ficheiroValorIni = null;
+
         do {
             System.out.println();
             System.out.println("=== Menu Principal ===");
@@ -53,14 +52,13 @@ public class SIR {
             switch (escolha) {
                 case 1:
                     System.out.print("Digite o nome do ficheiro que contém os valores Iniciais : ");
-                    String ficheiroValorIni = ler.nextLine() + FORMAT;
-                    valoresInicias = lerValoresIniciais(ficheiroValorIni);
+                    ficheiroValorIni = ler.nextLine() + FORMAT;
+
                     columnNamesEstado = getColumnNames(ficheiroValorIni);
                     break;
                 case 2:
                     System.out.print("Digite o nome do ficheiro que contém os valores dos Parametros : ");
                     ficheiroParamentros = ler.nextLine() + FORMAT;
-                    valoresParametros = lerParametros(ficheiroParamentros, 1);
                     columnNamesParametros = getColumnNames(ficheiroParamentros);
                     quantCasos = obterQuantCasos(columnNamesParametros, ficheiroParamentros);
                     break;
@@ -76,6 +74,8 @@ public class SIR {
                     break;
                 case 6:
                     for (int i = 1; i <= quantCasos; i++) {
+                        valoresInicias = lerValoresIniciais(ficheiroValorIni, i);
+                        valoresParametros = lerParametros(ficheiroParamentros, i);
                         double hCalculo = argumentos[1];
                         int numeroDeDiasCalculo = (int) argumentos[0];
                         verificarPlausibilidade(valoresInicias, valoresParametros);
@@ -84,19 +84,19 @@ public class SIR {
                         double[] ICalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
                         double[] RCalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
 
+
                         executarMetodo(metodo, SCalculo, ICalculo, RCalculo, hCalculo,
                                 numeroDeDiasCalculo, valoresInicias, valoresParametros,
                                 columnNamesEstado, columnNamesParametros);
 
-                        escreverResultadosEmFicheiro(SCalculo, ICalculo, RCalculo, argumentos[0], out + "CASO" + i, argumentos[1]);
+                        escreverResultadosEmFicheiro(SCalculo, ICalculo, RCalculo, argumentos[0],
+                                out, argumentos[1],i);
 
                         escreverPontosGnu(SCalculo, numeroDeDiasCalculo, "dataS" + i + ".dat", hCalculo);
                         escreverPontosGnu(ICalculo, numeroDeDiasCalculo, "dataI" + i + ".dat", hCalculo);
                         escreverPontosGnu(RCalculo, numeroDeDiasCalculo, "dataR" + i + ".dat", hCalculo);
 
-                        if (i < quantCasos) {
-                            valoresParametros = lerParametros(ficheiroParamentros, i);
-                        }
+
                     }
                     escreverScript(quantCasos);
                     executarGP(FICH_GP);
@@ -121,7 +121,7 @@ public class SIR {
 
         // Ignorar a primeira linha
         if (ler.hasNextLine()) {
-            ler.nextLine(); // Descartar a primeira linha
+            ler.nextLine();
         }
 
         while (ler.hasNextLine()) {
@@ -129,7 +129,7 @@ public class SIR {
             String[] colunas = linha.split(";"); // Supondo que o separador seja ponto e vírgula, ajuste conforme seu arquivo
 
             // Verificar se a coluna caso existe e incrementar o contador
-            if (colunas.length > indexCaso) {
+            if (colunas.length > indexCaso + 1) {
                 contador++;
             }
         }
@@ -219,27 +219,31 @@ public class SIR {
             verificarComandoDias(numeroDeDias, NUM_DIA_MIN);
             verificarComandoPasso(h, LIMITE_INF_PASSO, LIMITE_SUP_PASSO);
 
-            double[] valoresIniciais = lerValoresIniciais(condicoesIniciaisFile);
             String[] columnNamesEstado = getColumnNames(condicoesIniciaisFile);
-            double[] parametros = lerParametros(parametrosFile, 1); //precisa-se de alterar para ler os varios casos
             String[] columnNamesParametro = getColumnNames(parametrosFile);
-
-            double[] S = new double[(int) (numeroDeDias / h) + 1];
-            double[] I = new double[(int) (numeroDeDias / h) + 1];
-            double[] R = new double[(int) (numeroDeDias / h) + 1];
-
-
-            executarMetodo(metodo, S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesEstado, columnNamesParametro);
-            escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro, h);
             int quantCasos = obterQuantCasos(columnNamesParametro, parametrosFile);
 
             for (int i = 1; i <= quantCasos; i++) {
+
+                double[] parametros = lerParametros(parametrosFile, i);
+                double[] valoresIniciais = lerValoresIniciais(condicoesIniciaisFile, i);
+
+                double[] S = new double[(int) (numeroDeDias / h) + 1];
+                double[] I = new double[(int) (numeroDeDias / h) + 1];
+                double[] R = new double[(int) (numeroDeDias / h) + 1];
+
+
+                executarMetodo(metodo, S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesEstado,
+                        columnNamesParametro);
+                escreverResultadosEmFicheiro(S, I, R, numeroDeDias, nomeFicheiro, h, i);
+
                 escreverPontosGnu(S, numeroDeDias, "dataS" + i + ".dat", h);
                 escreverPontosGnu(I, numeroDeDias, "dataI" + i + ".dat", h);
                 escreverPontosGnu(R, numeroDeDias, "dataR" + i + ".dat", h);
             }
             escreverScript(quantCasos);
             executarGP(FICH_GP);
+
         }
     }
 
@@ -289,7 +293,9 @@ public class SIR {
         System.out.println("  -h, --help     Exibir esta mensagem de ajuda\n");
     }
 
-    public static void executarMetodo(int num, double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros, String[] columnNamesEstado, String[] columnNamesParametro) {
+    public static void executarMetodo(int num, double[] S, double[] I, double[] R, double h, int numeroDeDias,
+                                      double[] valoresIniciais, double[] parametros, String[] columnNamesEstado,
+                                      String[] columnNamesParametro) {
         if (num == 1) {
             aplicarEuler(S, I, R, h, numeroDeDias, valoresIniciais, parametros, columnNamesEstado, columnNamesParametro);
         } else if (num == 2) {
@@ -334,33 +340,57 @@ public class SIR {
         return ler.next().split(";");
     }
 
-    public static double[] lerValoresIniciais(String file) throws FileNotFoundException {
+    public static double[] lerValoresIniciais(String file, int casoN) throws FileNotFoundException {
         Scanner ler = new Scanner(new File(file));
-        String[] valores = ler.next().split(";");
 
         ler.nextLine();
-        double[] valoresIniciais = new double[valores.length];
-        String[] splitStr = ler.next().split(";");
 
-        for (int i = 0; i < splitStr.length; i++) {
-            valoresIniciais[i] = Double.parseDouble(splitStr[i].replace(',', '.'));
+        double[] valoresIniciais;
+
+        for (int i = 1; i < casoN; i++) {
+            ler.nextLine();
         }
+
+        // Ler os valores iniciais da linha desejada
+        String linha = ler.nextLine();
+
+
+        String[] partes = linha.split(";");
+        valoresIniciais = new double[partes.length];
+
+        for (int i = 0; i < partes.length; i++) {
+            // Substituir vírgula por ponto antes de converter para double
+            String valor = partes[i].replace(",", ".");
+            valoresIniciais[i] = Double.parseDouble(valor);
+        }
+
+
         ler.close();
         return valoresIniciais;
     }
 
     public static double[] lerParametros(String file, int casoN) throws FileNotFoundException {
         Scanner ler = new Scanner(new File(file));
-        String[] valores = ler.next().split(";");
+
+        // Ignorar a primeira linha (cabeçalho)
+        ler.nextLine();
+
+        double[] parametros;
+
+        // Ignorar as linhas até o caso desejado
         for (int i = 1; i < casoN; i++) {
             ler.nextLine();
         }
-        double[] parametros = new double[valores.length];
-        String[] splitStr = ler.next().split(";");
+
+        // Ler os parâmetros da linha desejada
+        String[] splitStr = ler.nextLine().split(";");
+        parametros = new double[splitStr.length];
 
         for (int i = 0; i < splitStr.length; i++) {
-            parametros[i] = Double.parseDouble(splitStr[i].replace(',', '.'));
+            String valor = splitStr[i].replace(",", ".");
+            parametros[i] = Double.parseDouble(valor);
         }
+
         ler.close();
         return parametros;
     }
@@ -380,7 +410,8 @@ public class SIR {
         int index_b = findColumnByName(columnNamesParametro, "b");
         int indexDelta1 = findColumnByName(columnNamesParametro, "delta1");
 
-        return (parametros[index_b] * S * I - parametros[indexKapa] * I + parametros[indexBeta] * I * R - (parametros[indexMU] + parametros[indexDelta1]) * I);
+        return (parametros[index_b] * S * I - parametros[indexKapa] * I + parametros[indexBeta] * I * R -
+                (parametros[indexMU] + parametros[indexDelta1]) * I);
     }
 
     public static double fR(double I, double R, double[] parametros, String[] columnNamesParametro) {
@@ -392,7 +423,9 @@ public class SIR {
         return (parametros[indexKapa] * I - parametros[indexBeta] * I * R - (parametros[indexMU] + parametros[indexDelta2]) * R);
     }
 
-    public static void aplicarEuler(double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros, String[] columnNamesEstado, String[] columnNamesParametro) {
+    public static void aplicarEuler(double[] S, double[] I, double[] R, double h, int numeroDeDias,
+                                    double[] valoresIniciais, double[] parametros, String[] columnNamesEstado,
+                                    String[] columnNamesParametro) {
         int indexS0 = findColumnByName(columnNamesEstado, "S0");
         int indexI0 = findColumnByName(columnNamesEstado, "I0");
         int indexR0 = findColumnByName(columnNamesEstado, "R0");
@@ -410,7 +443,8 @@ public class SIR {
         }
     }
 
-    public static void aplicarRK4(double[] S, double[] I, double[] R, double h, int numeroDeDias, double[] valoresIniciais, double[] parametros, String[] columnNamesParametro) {
+    public static void aplicarRK4(double[] S, double[] I, double[] R, double h, int numeroDeDias,
+                                  double[] valoresIniciais, double[] parametros, String[] columnNamesParametro) {
         S[0] = valoresIniciais[0];
         I[0] = valoresIniciais[1];
         R[0] = valoresIniciais[2];
@@ -441,8 +475,9 @@ public class SIR {
         }
     }
 
-    public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R, double numeroDeDias, String nomeDoFicheiro, double h) throws FileNotFoundException {
-        PrintWriter escrever = new PrintWriter(nomeDoFicheiro + FORMAT);
+    public static void escreverResultadosEmFicheiro(double[] S, double[] I, double[] R, double numeroDeDias,
+                                                    String nomeDoFicheiro, double h, int caso) throws FileNotFoundException {
+        PrintWriter escrever = new PrintWriter(nomeDoFicheiro + "_Caso_" + caso + FORMAT );
         escrever.print("Dia;S;I;R;T\n");
         double varAux = 0;
         for (int dia = 0; dia < ((int) (numeroDeDias / h)) + 1; dia++) {
@@ -478,7 +513,8 @@ public class SIR {
         return parteDecimal == 0; // Verifica se não há parte decimal
     }
 
-    public static void escreverPontosGnu(double[] parametro, int numeroDeDias, String ficheiroGNU, double h) throws FileNotFoundException {
+    public static void escreverPontosGnu(double[] parametro, int numeroDeDias, String ficheiroGNU,
+                                         double h) throws FileNotFoundException {
         PrintWriter escrever = new PrintWriter(ficheiroGNU);
         double varAux = 0;
         for (int dia = 0; dia < ((int) (numeroDeDias / h)) + 1; dia++) {
