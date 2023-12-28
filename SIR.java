@@ -51,13 +51,13 @@ public class SIR {
 
             switch (escolha) {
                 case 1:
-                    System.out.print("Digite o nome do ficheiro que contém os valores Iniciais : ");
+                    System.out.print("Digite o nome do ficheiro que contém os Valores Iniciais : ");
                     ficheiroValorIni = ler.nextLine() + FORMAT;
 
                     columnNamesEstado = getColumnNames(ficheiroValorIni);
                     break;
                 case 2:
-                    System.out.print("Digite o nome do ficheiro que contém os valores dos Parametros : ");
+                    System.out.print("Digite o nome do ficheiro que contém os Valores dos Parametros : ");
                     ficheiroParamentros = ler.nextLine() + FORMAT;
                     columnNamesParametros = getColumnNames(ficheiroParamentros);
                     quantCasos = obterQuantCasos(columnNamesParametros, ficheiroParamentros);
@@ -95,8 +95,6 @@ public class SIR {
                         escreverPontosGnu(SCalculo, numeroDeDiasCalculo, "dataS" + i + ".dat", hCalculo);
                         escreverPontosGnu(ICalculo, numeroDeDiasCalculo, "dataI" + i + ".dat", hCalculo);
                         escreverPontosGnu(RCalculo, numeroDeDiasCalculo, "dataR" + i + ".dat", hCalculo);
-
-
                     }
                     escreverScript(quantCasos);
                     executarGP(FICH_GP);
