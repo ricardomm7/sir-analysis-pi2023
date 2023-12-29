@@ -78,7 +78,6 @@ public class SIR {
                         valoresParametros = lerParametros(ficheiroParamentros, i);
                         double hCalculo = argumentos[1];
                         int numeroDeDiasCalculo = (int) argumentos[0];
-                        verificarPlausibilidade(valoresInicias, valoresParametros);
 
                         double[] SCalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
                         double[] ICalculo = new double[((int) (numeroDeDiasCalculo / hCalculo)) + 1];
@@ -146,37 +145,6 @@ public class SIR {
         int numMetodo = ler.nextInt();
         verificarComandoMetodo(numMetodo, LIMITE_INF_PASSO, NUM_METODOS);
         return numMetodo;
-    }
-
-
-    public static void verificarPlausibilidade(double[] valoresIniciais, double[] parametros) {
-        verificarNumeroElementos(valoresIniciais, MIN_VALORES_ESPERADOS, "valores iniciais");
-        verificarNumeroElementos(parametros, MIN_PARAMETROS_ESPERADOS, "parâmetros");
-        if (saoValoresPlausiveis(valoresIniciais)) {
-            System.out.println("ERRO: Valores iniciais não plausíveis.");
-            System.exit(1);
-        }
-        if (saoValoresPlausiveis(parametros)) {
-            System.out.println("ERRO: Parâmetros não plausíveis.");
-            System.exit(1);
-        }
-    }
-
-    public static void verificarNumeroElementos(double[] array, int numeroEsperado, String nome) {
-        if (array.length < numeroEsperado) {
-            System.out.println("ERRO: O número de " + nome + " deve ser " + numeroEsperado + ".");
-            System.exit(1);
-        }
-    }
-
-    public static boolean saoValoresPlausiveis(double[] valores) {
-        for (int i = 0; i < valores.length; i++) {
-            double valor = valores[i];
-            if (valor < VALOR_MIN || valor > VALOR_MAX) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public static int pedirNumeroDias(String mensagem) {
@@ -363,6 +331,8 @@ public class SIR {
 
 
         ler.close();
+        /*verificarNumeroElementos(valoresIniciais, MIN_VALORES_ESPERADOS, "valores iniciais");
+        verificarPlausibilidade(valoresIniciais);*/
         return valoresIniciais;
     }
 
@@ -389,8 +359,35 @@ public class SIR {
         }
 
         ler.close();
+        /*verificarNumeroElementos(parametros, MIN_PARAMETROS_ESPERADOS, "parâmetros");
+        verificarPlausibilidade(parametros);*/
         return parametros;
     }
+
+    /*public static void verificarNumeroElementos(double[] array, int numeroEsperado, String nome) {
+        if (array.length < numeroEsperado) {
+            System.out.println("ERRO: O número de " + nome + " deve ser " + numeroEsperado + ".");
+            System.exit(1);
+        }
+    }
+
+    public static void verificarPlausibilidade(double[] valores) {
+        if (!saoValoresPlausiveis(valores)) {
+            System.out.println("ERRO: Parâmetros não plausíveis.");
+            System.exit(1);
+        }
+    }
+
+    public static boolean saoValoresPlausiveis(double[] valores) {
+        for (int i = 0; i < valores.length; i++) {
+            double valor = valores[i];
+            if (valor < VALOR_MIN || valor > VALOR_MAX) {
+                return true;
+            }
+        }
+        return false;
+    }*/
+
 
     public static double fS(double S, double I, double[] parametros, String[] columnNamesParametro) {
         int indexLambda = findColumnByName(columnNamesParametro, "lambda");
