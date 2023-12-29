@@ -331,8 +331,8 @@ public class SIR {
 
 
         ler.close();
-        /*verificarNumeroElementos(valoresIniciais, MIN_VALORES_ESPERADOS, "valores iniciais");
-        verificarPlausibilidade(valoresIniciais);*/
+        verificarNumeroElementos(valoresIniciais, MIN_VALORES_ESPERADOS, "valores iniciais");
+        verificarPlausibilidade(valoresIniciais);
         return valoresIniciais;
     }
 
@@ -359,12 +359,12 @@ public class SIR {
         }
 
         ler.close();
-        /*verificarNumeroElementos(parametros, MIN_PARAMETROS_ESPERADOS, "parâmetros");
-        verificarPlausibilidade(parametros);*/
+        verificarNumeroElementos(parametros, MIN_PARAMETROS_ESPERADOS, "parâmetros");
+        verificarPlausibilidade(parametros);
         return parametros;
     }
 
-    /*public static void verificarNumeroElementos(double[] array, int numeroEsperado, String nome) {
+    public static void verificarNumeroElementos(double[] array, int numeroEsperado, String nome) {
         if (array.length < numeroEsperado) {
             System.out.println("ERRO: O número de " + nome + " deve ser " + numeroEsperado + ".");
             System.exit(1);
@@ -381,12 +381,12 @@ public class SIR {
     public static boolean saoValoresPlausiveis(double[] valores) {
         for (int i = 0; i < valores.length; i++) {
             double valor = valores[i];
-            if (valor < VALOR_MIN || valor > VALOR_MAX) {
+            if (valor > VALOR_MIN || valor < VALOR_MAX) {
                 return true;
             }
         }
         return false;
-    }*/
+    }
 
 
     public static double fS(double S, double I, double[] parametros, String[] columnNamesParametro) {
