@@ -12,7 +12,7 @@ public class SIR {
     static final int NUM_METODOS = 2;
     static final String FORMAT = ".csv";
     static final String FICH_GP = "file.gp";
-    static final String NOME_FICHEIRO_PNG = "export_visual_graph.png";
+    static final String NOME_FICHEIRO_PNG = "multiplot_graficos.png";
     static final String PEDIR_DIAS = "Digite o número de dias desejado: ";
     static final String PEDIR_PASSO = "Digite o número do passo (h) desejado: ";
     static final String MENSAGEM_EXIT = "Digite 'exit' para regressar ao menu";
