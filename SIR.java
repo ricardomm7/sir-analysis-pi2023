@@ -154,11 +154,11 @@ public class SIR {
 
             switch (escolha) {
                 case 1:
-                    System.out.print(MENSAGEM_EXIT+"\nDigite o nome do ficheiro que contém os Valores Iniciais : ");
+                    System.out.print(MENSAGEM_EXIT + "\nDigite o nome do ficheiro que contém os Valores Iniciais : ");
 
                     String input1 = ler.nextLine();
 
-                    if (voltarMenu(input1)){
+                    if (voltarMenu(input1)) {
                         continue;
                     }
 
@@ -166,10 +166,10 @@ public class SIR {
                     columnNamesEstado = getColumnNames(ficheiroValorIni);
                     break;
                 case 2:
-                    System.out.print(MENSAGEM_EXIT+"\nDigite o nome do ficheiro que contém os Valores dos Parametros : ");
+                    System.out.print(MENSAGEM_EXIT + "\nDigite o nome do ficheiro que contém os Valores dos Parametros : ");
                     String input2 = ler.nextLine();
 
-                    if (voltarMenu(input2)){
+                    if (voltarMenu(input2)) {
                         continue;
                     }
 
@@ -184,10 +184,10 @@ public class SIR {
                     metodo = escolherMetodo();
                     break;
                 case 5:
-                    System.out.print(MENSAGEM_EXIT+"\nDigite o prefixo desejado para o ficheiro CSV que contém os resultados : ");
+                    System.out.print(MENSAGEM_EXIT + "\nDigite o prefixo desejado para o ficheiro CSV que contém os resultados : ");
                     String input5 = ler.nextLine();
 
-                    if (voltarMenu(input5)){
+                    if (voltarMenu(input5)) {
                         continue;
                     }
 
@@ -230,7 +230,8 @@ public class SIR {
 
         ler.close();
     }
-    public static boolean voltarMenu(String input){
+
+    public static boolean voltarMenu(String input) {
         return input.equalsIgnoreCase("exit");
     }
 
@@ -243,10 +244,10 @@ public class SIR {
     }
 
     public static int escolherMetodo() throws FileNotFoundException {
-        System.out.print(MENSAGEM_EXIT+"\nDigite (1) para o método de Euler ou (2) para o método de Runge-Kutta : ");
+        System.out.print(MENSAGEM_EXIT + "\nDigite (1) para o método de Euler ou (2) para o método de Runge-Kutta : ");
         String input3 = ler.nextLine();
 
-        if (voltarMenu(input3)){
+        if (voltarMenu(input3)) {
             exibirMenuPrincipal();
         }
 
@@ -257,7 +258,7 @@ public class SIR {
 
     public static int pedirNumeroDias(String mensagem) throws FileNotFoundException {
         int numero;
-        System.out.print(MENSAGEM_EXIT+"\n"+mensagem );
+        System.out.print(MENSAGEM_EXIT + "\n" + mensagem);
 
         do {
             String input4 = ler.nextLine();
@@ -277,8 +278,8 @@ public class SIR {
 
     public static double pedirValorComUmPrint(int min, int max, String inform) throws FileNotFoundException {
         double num;
-        System.out.print("\n"+
-                MENSAGEM_EXIT+"\n"+inform);
+        System.out.print("\n" +
+                MENSAGEM_EXIT + "\n" + inform);
         do {
             String input4 = ler.nextLine();
             if (voltarMenu(input4)) {
@@ -353,7 +354,7 @@ public class SIR {
 
         ler.close();
         verificarNumeroElementos(valoresIniciais, MIN_VALORES_ESPERADOS, "valores iniciais");
-        verificarPlausibilidade(valoresIniciais);
+        verificarPlausibilidadeValoresIniciais(valoresIniciais);
         return valoresIniciais;
     }
 
@@ -377,7 +378,7 @@ public class SIR {
 
         ler.close();
         verificarNumeroElementos(parametros, MIN_PARAMETROS_ESPERADOS, "parâmetros");
-        verificarPlausibilidade(parametros);
+        verificarPlausibilidadeParametros(parametros);
         return parametros;
     }
 
@@ -389,21 +390,24 @@ public class SIR {
         }
     }
 
-    public static void verificarPlausibilidade(double[] valores) {
-        if (!saoValoresPlausiveis(valores)) {
-            System.out.println("ERRO: Parâmetros não plausíveis.");
-            System.exit(1);
+    public static void verificarPlausibilidadeValoresIniciais(double[] valores){
+        for (int i = 0; i < valores.length; i++) {
+            double valor = valores[i];
+            if (valor < VALOR_MIN || valor > VALOR_MAX) {
+                System.out.println("ERRO: Valores iniciais inválidos.");
+                System.exit(1);
+            }
         }
     }
 
-    public static boolean saoValoresPlausiveis(double[] valores) {
-        for (int i = 0; i < valores.length; i++) {
+    public static void verificarPlausibilidadeParametros(double[] valores) {
+        for (int i = 1; i < valores.length; i++) {
             double valor = valores[i];
-            if (valor > VALOR_MIN || valor < VALOR_MAX) {
-                return true;
+            if (valor < VALOR_MIN || valor > VALOR_MAX) {
+                System.out.println("ERRO: Valores dos parâmetros inválidos.");
+                System.exit(1);
             }
         }
-        return false;
     }
 
     public static boolean eInteiro(double numero) {
