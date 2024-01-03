@@ -15,7 +15,7 @@ public class SIR {
     static final String NOME_FICHEIRO_PNG = "multiplot_graficos.png";
     static final String PEDIR_DIAS = "Digite o número de dias desejado: ";
     static final String PEDIR_PASSO = "Digite o número do passo (h) desejado: ";
-    static final String MENSAGEM_EXIT = "Digite 'exit' para regressar ao menu";
+    static final String MENSAGEM_EXIT = "Digite 'exit' para regressar ao menu.";
     static final double VALOR_MIN = 0.0;
     static final double VALOR_MAX = 1.0;
     static Scanner ler = new Scanner(System.in);
@@ -120,13 +120,13 @@ public class SIR {
         System.out.println("\nSIR - Modelo Epidemiológico\n");
 
         System.out.println("Opções:\n");
-        System.out.println("  -b <arquivo>   Ficheiro de parâmetros");
-        System.out.println("  -c <arquivo>   Ficheiro de condições iniciais");
-        System.out.println("  -m <metodo>    Método a usar (1-Euler ou 2-Runge Kutta de 4ª ordem)");
-        System.out.println("  -p <passo>     Passo de integração h (maior que zero e menor ou igual a um)");
-        System.out.println("  -d <dias>      Número de dias a considerar para análise (maior que zero e divisivel por 1) ");
-        System.out.println("  <arquivo>   Nome do ficheiro de saída CSV ");
-        System.out.println("  -h, --help     Exibir esta mensagem de ajuda\n");
+        System.out.println("  -b <arquivo>   Ficheiro de parâmetros.");
+        System.out.println("  -c <arquivo>   Ficheiro de condições iniciais.");
+        System.out.println("  -m <metodo>    Método a usar (1-Euler ou 2-Runge Kutta de 4ª ordem).");
+        System.out.println("  -p <passo>     Passo de integração h (maior que zero e menor ou igual a um).");
+        System.out.println("  -d <dias>      Número de dias a considerar para análise (maior que zero e divisivel por 1).");
+        System.out.println("  <arquivo>   Nome do ficheiro de saída CSV.");
+        System.out.println("  -h, --help     Exibir esta mensagem de ajuda.\n");
     }
 
     // EXECUTAR PROGRAMA MODO INTERATIVO
@@ -139,13 +139,13 @@ public class SIR {
         do {
             System.out.println();
             System.out.println("=== Menu Principal ===");
-            System.out.println("|| 1. Colocar nome ficheiro dos valores iniciais");
-            System.out.println("|| 2. Colocar nome ficheiro dos paramêtros");
-            System.out.println("|| 3. Colocar argumentos (passo e número de Dias)");
-            System.out.println("|| 4. Escolher método");
-            System.out.println("|| 5. Escrever nome do ficheiro de saída");
-            System.out.println("|| 6. Realizar cálculos");
-            System.out.println("|| 0. Fechar o programa");
+            System.out.println("|| 1. Colocar nome ficheiro dos valores iniciais.");
+            System.out.println("|| 2. Colocar nome ficheiro dos parâmetros.");
+            System.out.println("|| 3. Colocar argumentos (passo e número de dias).");
+            System.out.println("|| 4. Escolher método.");
+            System.out.println("|| 5. Escrever nome do ficheiro de saída.");
+            System.out.println("|| 6. Realizar cálculos.");
+            System.out.println("|| 0. Fechar o programa.");
             System.out.println();
             System.out.println("Digite a opção desejada: ");
 
@@ -154,7 +154,7 @@ public class SIR {
 
             switch (escolha) {
                 case 1:
-                    System.out.print(MENSAGEM_EXIT + "\nDigite o nome do ficheiro que contém os Valores Iniciais : ");
+                    System.out.print(MENSAGEM_EXIT + "\nDigite o nome do ficheiro que contém os Valores Iniciais: ");
 
                     String input1 = ler.nextLine();
 
@@ -166,7 +166,7 @@ public class SIR {
                     columnNamesEstado = getColumnNames(ficheiroValorIni);
                     break;
                 case 2:
-                    System.out.print(MENSAGEM_EXIT + "\nDigite o nome do ficheiro que contém os Valores dos Parametros : ");
+                    System.out.print(MENSAGEM_EXIT + "\nDigite o nome do ficheiro que contém os Valores dos Parâmetros: ");
                     String input2 = ler.nextLine();
 
                     if (voltarMenu(input2)) {
@@ -184,7 +184,7 @@ public class SIR {
                     metodo = escolherMetodo();
                     break;
                 case 5:
-                    System.out.print(MENSAGEM_EXIT + "\nDigite o prefixo desejado para o ficheiro CSV que contém os resultados : ");
+                    System.out.print(MENSAGEM_EXIT + "\nDigite o prefixo desejado para o ficheiro CSV que contém os resultados: ");
                     String input5 = ler.nextLine();
 
                     if (voltarMenu(input5)) {
@@ -244,7 +244,7 @@ public class SIR {
     }
 
     public static int escolherMetodo() throws FileNotFoundException {
-        System.out.print(MENSAGEM_EXIT + "\nDigite (1) para o método de Euler ou (2) para o método de Runge-Kutta : ");
+        System.out.print(MENSAGEM_EXIT + "\nDigite (1) para o método de Euler ou (2) para o método de Runge-Kutta: ");
         String input3 = ler.nextLine();
 
         if (voltarMenu(input3)) {
