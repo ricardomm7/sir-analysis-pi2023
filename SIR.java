@@ -139,9 +139,9 @@ public class SIR {
         do {
             System.out.println();
             System.out.println("=== Menu Principal ===");
-            System.out.println("|| 1. Colocar nome ficheiro dos Valores Iniciais");
-            System.out.println("|| 2. Colocar nome ficheiro dos Parametros");
-            System.out.println("|| 3. Colocar argumentos (Passo e Número de Dias)");
+            System.out.println("|| 1. Colocar nome ficheiro dos valores iniciais");
+            System.out.println("|| 2. Colocar nome ficheiro dos paramêtros");
+            System.out.println("|| 3. Colocar argumentos (passo e número de Dias)");
             System.out.println("|| 4. Escolher método");
             System.out.println("|| 5. Escrever nome do ficheiro de saída");
             System.out.println("|| 6. Realizar cálculos");
