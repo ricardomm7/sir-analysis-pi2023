@@ -390,7 +390,7 @@ public class SIR {
         }
     }
 
-    public static void verificarPlausibilidadeValoresIniciais(double[] valores){
+    public static void verificarPlausibilidadeValoresIniciais(double[] valores) {
         for (int i = 0; i < valores.length; i++) {
             double valor = valores[i];
             if (valor < VALOR_MIN || valor > VALOR_MAX) {
